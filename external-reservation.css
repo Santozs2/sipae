@@ -1,0 +1,47 @@
+.external-reservation h3 { color:#263b56; font-size:1.03rem; margin:10px 0; }
+.external-steps { display:flex; list-style:none; padding:0; margin:22px 0 28px; gap:10px; }
+.external-steps li { flex:1; display:flex; align-items:center; gap:8px; padding:10px 8px; font-size:.74rem; color:#68768b; border-bottom:2px solid #e5eaf1; }
+.external-steps li > span { display:grid; place-items:center; flex-shrink:0; width:23px; height:23px; background:#edf1f7; border-radius:50%; font-weight:700; }
+.external-steps li[aria-current] { color:#a21d38; border-color:#c52642; font-weight:700; }
+.external-steps li[aria-current] > span { color:white; background:#bb2340; }
+.external-help { font-size:.8rem; color:#62718a; line-height:1.75; margin:12px 0 22px; }
+.external-period-summary { display:flex; flex-wrap:wrap; gap:12px 20px; padding:16px 18px; background:#f1f5fa; color:#415775; border-radius:12px; margin:0 0 22px; font-size:.77rem; }
+.external-period-summary span { display:flex; gap:8px; align-items:center; }
+.external-period-summary .icon { width:17px; height:17px; flex-shrink:0; }
+.external-room-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.external-room-grid .finder-room { min-width:0; }
+.external-room-grid .finder-room-body .button { justify-content:center; white-space:normal; }
+.external-unavailable,.external-date-list { border:1px solid #dde4ed; border-radius:10px; margin-top:22px; font-size:.78rem; color:#53637b; }
+.external-unavailable summary,.external-date-list summary { cursor:pointer; padding:15px; color:#304965; font-weight:600; }
+.external-unavailable ul { padding:0 24px 15px 32px; line-height:1.8; margin:0; }
+.external-unavailable li { margin:8px 0; }
+.external-selected { display:flex; align-items:center; justify-content:space-between; gap:15px; padding:18px; border:1px solid #dce5ee; border-radius:12px; margin:0 0 25px; }
+.external-selected p,.external-review-heading p { font-size:.78rem; color:#68788c; margin:8px 0 0; }
+.external-selected h3 { margin:7px 0; }
+.external-review-heading { margin-bottom:20px; }
+.external-review-heading h3 { font-size:1.3rem; }
+.external-event-summary { margin:20px 0; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.external-event-summary > div:last-child { grid-column:1/-1; }
+.external-event-summary dt { font-size:.72rem; color:#6a7890; margin-bottom:7px; }
+.external-event-summary dd { margin:0; font-size:.85rem; color:#2e425f; line-height:1.7; overflow-wrap:anywhere; white-space:pre-wrap; }
+.external-date-list ul { list-style:none; margin:0; padding:0 16px 16px; max-height:190px; overflow:auto; }
+.external-date-list li { display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid #e5ebf2; }
+.external-confirm-note { padding:15px 18px; background:#edf7f1; border-left:3px solid #45896a; border-radius:8px; color:#365f4d; font-size:.8rem; line-height:1.7; margin-top:22px; }
+.external-success { padding:10px 0; }
+.external-success-icon { display:grid; place-items:center; width:58px; height:58px; background:#e6f6ed; color:#26734a; border-radius:18px; margin:12px 0 22px; }
+.external-success-icon .icon { width:30px; height:30px; }
+.external-success h3 { color:#263b56; font-size:1.4rem; margin:10px 0; }
+.external-success > p { font-size:.85rem; color:#62718a; line-height:1.7; }
+.external-success .external-period-summary { margin-top:24px; }
+.external-occurrences .today-list,.external-cancel-review { max-height:300px; overflow:auto; }
+.external-occurrences h3 { margin:24px 0 14px; font-size:.9rem; }
+.external-occurrences [aria-current="true"] { border:1px solid #bfcfe1; background:#f1f5fa; border-radius:8px; }
+@media(max-width:600px) {
+  .external-steps { gap:4px; }
+  .external-steps li { flex-direction:column; gap:7px; padding:9px 3px; font-size:.65rem; }
+  .external-room-grid { grid-template-columns:1fr; }
+  .external-selected { flex-wrap:wrap; }
+  .external-event-summary { grid-template-columns:1fr; }
+  .external-reservation input,.external-reservation textarea { font-size:1rem; }
+  .external-period-summary { padding:14px; gap:10px; }
+}
