@@ -58,7 +58,7 @@ test('A normalização preserva docentes, ambientes, turmas e a identidade dos g
   assert.equal(coordinator.nif, '100015');
   assert.equal(coordinator.roleLabel, 'Coordenação');
   assert.equal(coordinator.areaLabel, 'Unidade');
-  assert.equal(data.managementProfiles.diretor.name, 'Roberto Malta');
+  assert.equal(data.managementProfiles.diretor.name, 'Malta');
   assert.equal(data.managementProfiles.diretor.email, 'direcao@example.org');
   assert.equal(data.managementProfiles.diretor.nif, '100016');
 });

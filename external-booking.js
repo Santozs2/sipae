@@ -27,21 +27,28 @@
     const first = dateValue(query.startDate), last = dateValue(query.endDate);
     if (!Number.isFinite(first) || !Number.isFinite(last)) return { error: "Informe datas inicial e final válidas." };
     if (last < first) return { error: "A data final deve ser igual ou posterior à data inicial." };
-    if ((last - first) / DAY + 1 > 366) return { error: "Selecione um período de até 366 dias por reserva." };
+    const weekdays = query.weekdays === undefined ? [0, 1, 2, 3, 4, 5, 6] : query.weekdays;
+    if (!Array.isArray(weekdays) || !weekdays.length || weekdays.some((day) => !Number.isInteger(day) || day < 0 || day > 6))
+      return { error: "Selecione pelo menos um dia da semana válido." };
     const start = timeValue(query.start), end = timeValue(query.end);
     if (!Number.isFinite(start) || !Number.isFinite(end) || start >= end)
       return { error: "Informe início e fim em intervalos de 15 minutos, com o fim posterior ao início." };
     const shift = (data.shifts || []).find((item) => start >= item.start && end <= item.end);
     if (!shift) return { error: "Escolha horários dentro de um único turno de funcionamento." };
     const today = localDate(now);
-    if (query.startDate < today || (query.startDate === today && start <= localHour(now)))
+    if (query.startDate < today)
       return { error: "Escolha uma data e um horário de início futuros." };
     const attendees = typeof query.attendees === "number" || typeof query.attendees === "string" ? Number(query.attendees) : NaN;
     if (!Number.isInteger(attendees) || attendees < 1 || attendees > 500)
       return { error: "Informe um público inteiro entre 1 e 500 participantes." };
     const dates = [];
-    for (let stamp = first; stamp <= last; stamp += DAY) dates.push(new Date(stamp).toISOString().slice(0, 10));
-    return { error: null, dates, start, end, shift: shift.id, attendees };
+    for (let stamp = first; stamp <= last; stamp += DAY) {
+      const date = new Date(stamp);
+      if (weekdays.includes(date.getUTCDay())) dates.push(date.toISOString().slice(0, 10));
+    }
+    if (!dates.length) return { error: "O período não contém os dias da semana selecionados. Ajuste as datas ou os dias." };
+    if (dates[0] === today && start <= localHour(now)) return { error: "Escolha uma data e um horário de início futuros." };
+    return { error: null, dates, weekdays: [...new Set(weekdays)].sort(), start, end, shift: shift.id, attendees };
   }
   function roomProblem(room, slot, events) {
     if (room.status !== "ativo") return { date: slot.dates[0], reason: "Ambiente em manutenção ou inativo." };
@@ -51,7 +58,7 @@
     for (const date of slot.dates) {
       if (room.createdDate && room.createdDate > date) return { date, reason: "O ambiente ainda não está disponível nessa data." };
       if (!(room.workingDays || [1, 2, 3, 4, 5]).includes(new Date(date + "T12:00:00Z").getUTCDay()))
-        return { date, reason: "O ambiente não funciona nesse dia; todos os dias do período precisam estar disponíveis." };
+        return { date, reason: "O ambiente não funciona nesse dia; todas as ocorrências selecionadas precisam estar disponíveis." };
       const conflict = events.find((event) => event.roomId === room.id && event.date === date && event.start < slot.end && slot.start < event.end);
       if (conflict) return { date, reason: conflict.status === "pendente" ? "Há uma solicitação externa pendente nesse horário." : "O ambiente já possui uma reserva nesse horário." };
     }
@@ -102,6 +109,7 @@
     } while (identifiers.has(groupId) || ids.some((id) => identifiers.has(id)));
     const records = result.dates.map((date, index) => ({
       ...details, id: ids[index], groupId, groupStartDate: input.startDate, groupEndDate: input.endDate,
+      groupWeekdays: [...slot.weekdays],
       roomId: input.roomId, date, start: slot.start, end: slot.end, shift: slot.shift,
       attendees: slot.attendees, areaId: "unidade", status: "aprovada", priority: "normal",
       source: "diretor", direct: true, createdAt: now.toISOString(), decidedAt: now.toISOString(),

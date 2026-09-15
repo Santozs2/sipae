@@ -338,7 +338,7 @@
     const currentHour = new Date(data.reference).getHours(),
       greeting = currentHour < 12 ? "Bom dia" : currentHour < 18 ? "Boa tarde" : "Boa noite";
     return heading(
-      "COORDENAÇÃO", greeting + ", " + esc(data.managementProfiles.coordenador.name.split(" ")[0]) + "<span>.</span>",
+      "COORDENAÇÃO", greeting + ", " + esc(data.managementProfiles.coordenador.name.split(" ")[0]),
       "Acompanhe as aulas da unidade e consulte os horários disponíveis hoje.",
       calendarPill() + reportLink("coordenador"),
     ) + '<div class="kpi-grid">' +

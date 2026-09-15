@@ -10,7 +10,9 @@
   const fullDate = (value) => date(value) + " de " + value.slice(0, 4);
   const dateRange = () => draft.startDate === draft.endDate ? fullDate(draft.startDate) : fullDate(draft.startDate) + " a " + fullDate(draft.endDate);
   const dayCount = (n) => n + (n === 1 ? " dia" : " dias");
-  const periodSummary = () => '<div class="external-period-summary"><span>' + icon("calendar") + esc(dateRange()) + '</span><strong>' + esc(draft.start + "–" + draft.end) + ' em cada dia</strong><span>' + draft.attendees + ' participantes</span></div>';
+  const weekdays = [[1, "Segunda-feira"], [2, "Terça-feira"], [3, "Quarta-feira"], [4, "Quinta-feira"], [5, "Sexta-feira"], [6, "Sábado"], [0, "Domingo"]];
+  const weekdaySummary = (days) => weekdays.filter(([id]) => days.includes(id)).map(([, label]) => label).join(", ");
+  const periodSummary = () => '<div class="external-period-summary"><span>' + icon("calendar") + esc(dateRange()) + '</span><strong>' + esc(draft.start + "–" + draft.end) + ' em cada dia selecionado</strong><span>' + esc(weekdaySummary(draft.weekdays)) + '</span><span>' + draft.attendees + ' participantes</span></div>';
   function steps(current) {
     return '<ol class="external-steps" aria-label="Etapas da reserva">' + ["Período", "Ambiente", "Evento", "Confirmar"].map((name, i) =>
       '<li' + (i === current ? ' aria-current="step"' : '') + '><span>' + (i + 1) + '</span>' + name + '</li>').join("") + '</ol>';
@@ -27,15 +29,18 @@
   function open() {
     if (state.role !== "diretor") return;
     const day = defaultDay();
-    draft = { startDate: day, endDate: day, start: "13:00", end: "17:00", attendees: 30, organization: "", contact: "", purpose: "", roomId: "" };
+    draft = { startDate: day, endDate: day, weekdays: [1, 2, 3, 4, 5], start: "13:00", end: "17:00", attendees: 30, organization: "", contact: "", purpose: "", roomId: "" };
     matches = null; created = null;
     period();
   }
   function period() {
     const today = SIPAE_DATA.localDate();
-    show(0, '<form data-external-form="period"><h3>Quando será o evento?</h3><p class="external-help">O horário se repete em todos os dias entre as datas escolhidas. Para um único dia, use a mesma data nos dois campos.</p><div class="form-grid">' +
+    show(0, '<form data-external-form="period"><h3>Quando será o evento?</h3><p class="external-help">Escolha o período e os dias da semana. O horário será reservado somente nesses dias, entre a data inicial e a final. Você pode escolher um dia, vários meses ou um período maior.</p><div class="form-grid">' +
       P.field("direct-first", "Data inicial", P.input("direct-first", draft.startDate, "date", 'required min="' + today + '"')) +
       P.field("direct-last", "Data final", P.input("direct-last", draft.endDate, "date", 'required min="' + draft.startDate + '"')) +
+      P.field("direct-months", "Definir data final a partir do início", P.select("direct-months", [["", "Escolher data manualmente"], ["1", "Daqui a 1 mês"], ["2", "Daqui a 2 meses"], ["3", "Daqui a 3 meses"], ["6", "Daqui a 6 meses"], ["12", "Daqui a 12 meses"]], ""), true) +
+      '<fieldset class="external-weekdays full"><legend>Dias da semana</legend><div>' + weekdays.map(([id, label]) =>
+        '<label><input type="checkbox" name="direct-weekday" value="' + id + '"' + (draft.weekdays.includes(id) ? ' checked' : '') + '><span>' + label + '</span></label>').join("") + '</div></fieldset>' +
       P.field("direct-start", "Horário de início", P.input("direct-start", draft.start, "time", 'required step="900"')) +
       P.field("direct-end", "Horário de término", P.input("direct-end", draft.end, "time", 'required step="900"')) +
       P.field("direct-attendees", "Quantidade de participantes", P.input("direct-attendees", draft.attendees, "number", 'required min="1" max="500" step="1"'), true) +
@@ -81,7 +86,7 @@
     const r = selectedRoom(), range = dateRange(), q = { ...draft };
     draft = null; matches = null;
     S.render();
-    P.openDialog("Reserva externa confirmada", "Todos os dias foram agendados.", '<div class="external-success"><div class="external-success-icon">' + icon("check") + '</div><h3>' + esc(r.name) + '</h3><p>' + esc(q.organization) + '</p><div class="external-period-summary"><strong>' + dayCount(records.length) + (records.length === 1 ? ' confirmado' : ' confirmados') + '</strong><span>' + esc(range) + '</span><span>' + esc(q.start + "–" + q.end) + ' em cada dia</span></div><p class="external-help">Você pode consultar os detalhes e cancelar um dia ou os dias futuros deste agendamento.</p><div class="form-actions">' + P.button("Ver detalhes da reserva", "booking-detail", "e:" + records[0].id) + action("Ver reservas externas", "list") + '</div></div>', true);
+    P.openDialog("Reserva externa confirmada", "Todos os dias selecionados foram agendados.", '<div class="external-success"><div class="external-success-icon">' + icon("check") + '</div><h3>' + esc(r.name) + '</h3><p>' + esc(q.organization) + '</p><div class="external-period-summary"><strong>' + dayCount(records.length) + (records.length === 1 ? ' confirmado' : ' confirmados') + '</strong><span>' + esc(range) + '</span><span>' + esc(weekdaySummary(q.weekdays)) + '</span><span>' + esc(q.start + "–" + q.end) + ' em cada dia</span></div><p class="external-help">Você pode consultar os detalhes e cancelar um dia ou os dias futuros deste agendamento.</p><div class="form-actions">' + P.button("Ver detalhes da reserva", "booking-detail", "e:" + records[0].id) + action("Ver reservas externas", "list") + '</div></div>', true);
     S.toast("Reserva externa confirmada em " + dayCount(records.length) + ".");
   }
   document.addEventListener("click", (event) => {
@@ -109,10 +114,21 @@
     }
   });
   document.addEventListener("change", (event) => {
-    if (event.target.id !== "direct-first" || !draft) return;
+    if (!draft) return;
+    if (event.target.id === "direct-last") document.getElementById("direct-months").value = "";
+    if (!["direct-first", "direct-months"].includes(event.target.id)) return;
+    const first = document.getElementById("direct-first");
     const last = document.getElementById("direct-last");
-    last.min = event.target.value;
-    if (last.value < event.target.value) last.value = event.target.value;
+    last.min = first.value;
+    const months = Number(document.getElementById("direct-months").value);
+    if (months && first.value) {
+      const start = new Date(first.value + "T12:00:00Z"), target = new Date(start);
+      target.setUTCDate(1);
+      target.setUTCMonth(target.getUTCMonth() + months);
+      const maxDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+      target.setUTCDate(Math.min(start.getUTCDate(), maxDay));
+      last.value = target.toISOString().slice(0, 10);
+    } else if (last.value < first.value) last.value = first.value;
   });
   document.addEventListener("submit", (event) => {
     const form = event.target;
@@ -122,7 +138,7 @@
     const kind = form.dataset.externalForm;
     if (kind === "period") {
       const values = new FormData(form);
-      Object.assign(draft, { startDate: String(values.get("direct-first") || ""), endDate: String(values.get("direct-last") || ""), start: String(values.get("direct-start") || ""), end: String(values.get("direct-end") || ""), attendees: Number(values.get("direct-attendees")), roomId: "" });
+      Object.assign(draft, { startDate: String(values.get("direct-first") || ""), endDate: String(values.get("direct-last") || ""), weekdays: values.getAll("direct-weekday").map(Number), start: String(values.get("direct-start") || ""), end: String(values.get("direct-end") || ""), attendees: Number(values.get("direct-attendees")), roomId: "" });
       const result = engine.search(data, draft);
       if (result.error) { P.formError(form, result.error); return; }
       results();

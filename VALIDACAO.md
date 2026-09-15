@@ -1,5 +1,16 @@
 # Validação das alterações
 
+## Painel do diretor e filtros do calendário — 15/09/2026
+
+- **124 cenários passaram**, sem falhas: os 115 anteriores e 9 novos em `tests/calendario.test.cjs`. Todos os arquivos JavaScript da raiz passaram em `node --check`.
+- Filtro de sala validado nos três perfis, nas visões de dia, semana e mês, na lista lateral e nos detalhes. O Docente continua vendo somente suas reservas; filtros de bloco e docente se combinam ao de sala.
+- A contagem do turno corresponde aos registros do modal. No navegador, **Ver 4 agendamentos** abriu **Manhã · 4 agendamentos**, com quatro reservas. A lista lateral de hoje informou 11 e apresentou os mesmos 11 registros.
+- O resumo do período separa aulas acadêmicas e reservas externas. Reservas canceladas e solicitações externas pendentes não entram nos totais do calendário.
+- As cores dos cursos permanecem iguais entre turmas, perfis e datas: Desenvolvimento de Sistemas verde e Eletroeletrônica azul. A legenda pode ser expandida abaixo da grade.
+- Painel conferido no computador e em 390 × 844 px: gráfico com 280 px, rankings logo abaixo e disponibilidade acima dos blocos. Sem transbordamento horizontal da página. Filtro de sala e estado vazio conferidos no celular; sem erros ou avisos no console nos percursos executados.
+
+Para repetir: `node --test tests/*.test.cjs`.
+
 ## Reserva externa direta por período e guia de hospedagem — 15/09/2026
 
 - **115 cenários passaram**, sem falhas: reservas 37, planejamento 17, dados da unidade 6, relatórios da unidade 13, motor externo por período 35 e integração externa 7. Os 14 arquivos JavaScript da raiz passaram em `node --check`.

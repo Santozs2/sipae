@@ -828,9 +828,9 @@
     }
     const instance = {
       managementProfiles: {
-        coordenador: { name: "Edvaldo Saran", email: "coordenacao@example.org", phone: "(17) 0000-0000",
+        coordenador: { name: "Edvaldo", email: "coordenacao@example.org", phone: "(17) 0000-0000",
           nif: "100015", roleLabel: "Coordenação", areaLabel: "Unidade" },
-        diretor: { name: "Roberto Malta", email: "direcao@example.org", phone: "(17) 0000-0000",
+        diretor: { name: "Malta", email: "direcao@example.org", phone: "(17) 0000-0000",
           nif: "100016", roleLabel: "Direção da unidade", areaLabel: "Unidade SENAI Rio Preto" },
       },
       teacherSubjects,

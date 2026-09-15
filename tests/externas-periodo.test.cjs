@@ -180,14 +180,54 @@ test('29 de fevereiro válido pode ser reservado e a mudança de mês é inclusi
   assert.deepEqual(result.dates, ['2028-02-28', '2028-02-29', '2028-03-01']);
 });
 
-test('Limite de 366 dias é inclusivo, mas 367 dias são rejeitados antes de enumerar', () => {
+test('Períodos superiores a um ano são aceitos com data final definida', () => {
   const data = fixture(); data.rooms[0].workingDays = [0, 1, 2, 3, 4, 5, 6];
   const result = E.search(data, { ...query, startDate: '2026-09-21', endDate: '2027-09-21' }, now);
   assert.equal(result.error, null);
   assert.equal(result.dates.length, 366);
-  const excessive = E.search(data, { ...query, endDate: '2027-09-22' }, now);
-  assert.match(excessive.error, /366 dias/);
-  assert.equal(excessive.dates.length, 0);
+  const extended = E.search(data, { ...query, endDate: '2027-09-22' }, now);
+  assert.equal(extended.error, null);
+  assert.equal(extended.dates.length, 367);
+});
+
+test('Recorrência em dois meses inclui somente os dias da semana escolhidos', () => {
+  const data = fixture();
+  const request = { ...input, startDate: '2026-10-01', endDate: '2026-12-01', weekdays: [1, 3] };
+  const result = E.search(data, request, now);
+  assert.equal(result.error, null);
+  assert.equal(result.dates.length, 17);
+  assert.equal(result.dates[0], '2026-10-05');
+  assert.equal(result.dates.at(-1), '2026-11-30');
+  assert.ok(result.dates.every(date => [1, 3].includes(new Date(date + 'T12:00Z').getUTCDay())));
+  const confirmed = E.confirm(data, 'diretor', request, now);
+  assert.equal(confirmed.error, null);
+  assert.deepEqual(confirmed.records.map(record => record.date), result.dates);
+  assert.ok(confirmed.records.every(record => JSON.stringify(record.groupWeekdays) === '[1,3]'));
+});
+
+test('Conflitos em dias excluídos não impedem recorrência; em dias selecionados bloqueiam tudo', () => {
+  const data = fixture(), request = { ...input, startDate: '2026-10-01', endDate: '2026-12-01', weekdays: [1, 3] };
+  data.allocations.push(occupied({ date: '2026-10-06' }));
+  assert.ok(E.search(data, request, now).rooms.some(room => room.id === 'r1'));
+  data.allocations.push(occupied({ date: '2026-11-30' }));
+  const result = E.confirm(data, 'diretor', request, now);
+  assert.match(result.error, /30\/11\/2026/);
+  assert.equal(data.externalReservations.length, 0);
+});
+
+test('Dias vazios, inválidos ou ausentes no período retornam erro; duplicados não duplicam reservas', () => {
+  for (const weekdays of [[], [-1], [7], ['1'], null, 'segunda'])
+    assert.ok(E.search(fixture(), { ...query, weekdays }, now).error);
+  assert.match(E.search(fixture(), { ...query, weekdays: [5] }, now).error, /não contém/);
+  const result = E.confirm(fixture(), 'diretor', { ...input, weekdays: [1, 1, 3] }, now);
+  assert.equal(result.error, null);
+  assert.deepEqual(result.records.map(record => record.date), ['2026-09-21', '2026-09-23']);
+});
+
+test('Recorrência ignora o horário passado de hoje quando hoje não foi selecionado', () => {
+  const queryToday = { ...query, startDate: '2026-09-15', endDate: '2026-09-18', weekdays: [3], start: '08:00', end: '09:00' };
+  assert.equal(E.search(fixture(), queryToday, now).error, null);
+  assert.ok(E.search(fixture(), { ...queryToday, weekdays: [2] }, now).error);
 });
 
 test('Horários precisam de intervalos de 15 minutos e ficar dentro de um único turno', () => {

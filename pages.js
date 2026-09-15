@@ -153,6 +153,7 @@
     );
   }
   function localSelect(name, label, rows) {
+    if (["room", "block", "teacher"].includes(name)) return localMultiSelect(name, label, rows);
     return (
       '<label class="sr-only" for="local-' +
       name +
@@ -161,6 +162,19 @@
       "</label>" +
       select("local-" + name, rows, local()[name], 'data-local="' + name + '"')
     );
+  }
+  const selectedValues = (value) => Array.isArray(value) ? value : value && value !== "todos" ? [value] : [];
+  const filterMatches = (value, item) => !selectedValues(value).length || selectedValues(value).includes(item);
+  function localMultiSelect(name, label, rows) {
+    const selected = selectedValues(local()[name]), choices = rows.filter(([id]) => id !== "todos");
+    const summary = !selected.length ? rows[0][1] : selected.length === 1
+      ? choices.find(([id]) => id === selected[0])?.[1] || label
+      : selected.length + " " + ({ room: "salas", block: "blocos", teacher: "docentes" }[name]);
+    return '<details class="multi-filter" id="local-' + name + '"><summary aria-label="' + esc(label) + '">' +
+      esc(summary) + '</summary><div class="multi-filter-options" role="group" aria-label="' + esc(label) + '">' +
+      rows.map(([id, text]) => '<label><input type="checkbox" data-local-multi="' + name + '" value="' + esc(id) + '"' +
+        ((id === "todos" ? !selected.length : selected.includes(id)) ? ' checked' : '') + '><span>' + esc(text) + '</span></label>').join("") +
+      '</div></details>';
   }
   function errorBox() {
     return '<p class="form-error" role="alert" hidden></p>';
@@ -324,7 +338,7 @@
     return (
       heading(
         "DOCENTE · TECNOLOGIA DA INFORMAÇÃO",
-        "Bom dia, " + esc(current.name.split(" ")[0]) + "<span>.</span>",
+        (new Date(data.reference).getHours() < 12 ? "Bom dia" : new Date(data.reference).getHours() < 18 ? "Boa tarde" : "Boa noite") + ", " + esc(current.name.split(" ")[0]),
         "Suas aulas, reservas e ambientes em um só lugar.",
         link(icon("calendar") + "Ver calendário", "calendario", "secondary") +
           link("Minhas reservas", "reservas", "secondary") +
@@ -452,7 +466,7 @@
       (r) =>
         (f.period === "todos" || M.inRange(r.date, { period: f.period })) &&
         (f.status === "todos" || r.displayStatus === f.status) &&
-        (f.room === "todos" || r.roomId === f.room) &&
+        filterMatches(f.room, r.roomId) &&
         [room(r.roomId).name, cls(r.classId).code, cls(r.classId).name, r.id]
           .join(" ")
           .toLowerCase()
@@ -899,7 +913,7 @@
     const f = local();
     let rows = roomList().filter(
       (r) =>
-        (f.block === "todos" || r.block === f.block) &&
+        filterMatches(f.block, r.block) &&
         (f.status === "todos" || r.status === f.status) &&
         [r.name, r.type, ...r.resources]
           .join(" ")
@@ -1172,15 +1186,41 @@
         })),
     ];
   }
+  // A cor pertence ao curso, independentemente da turma, do perfil e da data.
+  const courseHues = {
+    "Desenvolvimento de Sistemas": 145,
+    "Redes de Computadores": 185,
+    "Programação Web": 265,
+    "Python para Iniciantes": 45,
+    "Informática Aplicada": 315,
+    "Mecânica de Precisão": 25,
+    "Eletroeletrônica": 210,
+    "Soldagem": 0,
+    "Usinagem Convencional": 75,
+    "Automação Industrial": 240,
+    "Segurança em Eletricidade": 195,
+    "Administração": 290,
+    "Logística": 165,
+    "Empreendedorismo": 345,
+    "Assistente Administrativo": 95,
+  };
+  function calendarEventStyle(a) {
+    const name = a.external ? "Reserva externa" : cls(a.classId)?.name || a.title;
+    const hue = a.external ? 330 : courseHues[name] ??
+      [...name].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 360, 0);
+    return ' style="--course-color:hsl(' + hue + ',65%,34%);--course-bg:hsl(' + hue + ',65%,95%)"';
+  }
+  function calendarLegend() {
+    const courses = [...new Map(calendarRows().map((a) => [a.external ? "Reserva externa" : a.title, a])).entries()]
+      .sort(([a], [b]) => a.localeCompare(b, "pt-BR"));
+    return '<details class="calendar-legend"><summary>Cores por curso</summary><div>' +
+      courses.map(([name, a]) => '<span' + calendarEventStyle(a) + '><i aria-hidden="true"></i>' + esc(name) + '</span>').join("") +
+      '</div></details>';
+  }
   function eventButton(a, month = false) {
     return (
-      '<button type="button" class="calendar-event ' +
-      (a.external
-        ? "external"
-        : state.role === "docente" && a.date < today
-          ? "completed"
-          : "unidade") +
-      '" data-action="booking-detail" data-id="' +
+      '<button type="button" class="calendar-event course-event"' + calendarEventStyle(a) +
+      ' data-action="booking-detail" data-id="' +
       a.key +
       '" title="' +
       esc(a.title + " · " + a.subtitle + " · " + room(a.roomId).name) +
@@ -1191,7 +1231,7 @@
       "–" +
       time(a.end) +
       (month
-        ? ""
+        ? "<br>" + esc(a.title)
         : "<br>" + esc(a.subtitle) + "<br>" + esc(room(a.roomId).name)) +
       "</button>"
     );
@@ -1201,9 +1241,27 @@
     return allCalendarEvents().filter(
       (a) =>
         (state.role !== "docente" || a.teacherId === teacherId) &&
-        (f.teacher === "todos" || a.teacherId === f.teacher) &&
-        (f.block === "todos" || room(a.roomId).block === f.block),
-    );
+        filterMatches(f.teacher, a.teacherId) &&
+        filterMatches(f.room, a.roomId) &&
+        filterMatches(f.block, room(a.roomId).block),
+    ).sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start || a.key.localeCompare(b.key));
+  }
+  function calendarRange() {
+    const f = local(), d = new Date(f.anchor + "T12:00Z");
+    if (f.view === "day") return { start: f.anchor, end: f.anchor };
+    if (f.view === "month") {
+      d.setUTCMonth(d.getUTCMonth() + 1, 0);
+      return { start: f.anchor.slice(0, 7) + "-01", end: SIPAE_DATA.dateString(d) };
+    }
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    const start = SIPAE_DATA.dateString(d);
+    return { start, end: addDays(start, 4) };
+  }
+  function calendarSummary(rows) {
+    const lessons = rows.filter((a) => !a.external).length,
+      external = rows.length - lessons;
+    return lessons + (lessons === 1 ? " aula agendada" : " aulas agendadas") +
+      " · " + external + (external === 1 ? " reserva externa" : " reservas externas");
   }
   function monthGrid() {
     const f = local(),
@@ -1246,8 +1304,8 @@
         (items.length > 2
           ? '<button type="button" class="calendar-more" data-action="calendar-day" data-id="' +
             ds +
-            '">+' +
-            (items.length - 2) +
+            '">Ver ' +
+            items.length +
             " reservas</button>"
           : "") +
         "</div>";
@@ -1298,8 +1356,8 @@
           (items.length > 3
             ? '<button type="button" class="calendar-more" data-action="calendar-day" data-id="' +
               ds +
-              '">+' +
-              (items.length - 3) +
+              '" data-shift="' + s.id + '">Ver ' +
+              items.length +
               " agendamentos</button>"
             : "") +
           "</div>";
@@ -1366,6 +1424,8 @@
   }
   function calendar() {
     const f = local(),
+      range = calendarRange(),
+      periodRows = calendarRows().filter((a) => a.date >= range.start && a.date <= range.end),
       anchor = new Date(f.anchor + "T12:00Z"),
       label =
         f.view === "month"
@@ -1376,27 +1436,22 @@
           : f.view === "day"
             ? date(f.anchor, true) +
               (f.anchor === today ? " · hoje" : "")
-            : date(f.anchor) + " · visão semanal";
+            : date(range.start) + " a " + date(range.end) + " · visão semanal";
     const upcoming = calendarRows()
         .filter((a) =>
           state.role === "docente"
             ? a.date >= today && a.date < addDays(today, 7)
             : a.date === today,
         )
-        .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start)
-        .slice(0, 6),
-      todayCount = calendarRows().filter((a) => a.date === today).length;
+        .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start);
     const side = card(
       state.role === "docente" ? "Próximos 7 dias" : "Reservas de hoje",
-      state.role === "docente"
-        ? "Sua agenda a partir de " + date(today)
-        : todayCount + " agendamentos no recorte",
-      '<div class="today-list">' +
+      upcoming.length + (upcoming.length === 1 ? " agendamento" : " agendamentos") + (state.role === "docente" ? " a partir de " + date(today) : " hoje"),
+      '<div class="today-list scroll-list" tabindex="0" role="region" aria-label="Todos os agendamentos da lista">' +
         upcoming
-          .slice(0, 5)
           .map(
             (a) =>
-              '<button type="button" class="today-item" data-action="booking-detail" data-id="' +
+              '<button type="button" class="today-item course-event"' + calendarEventStyle(a) + ' data-action="booking-detail" data-id="' +
               a.key +
               '"><div><strong>' +
               esc(room(a.roomId).name) +
@@ -1411,21 +1466,24 @@
               "</small></div></button>",
           )
           .join("") +
-        "</div>",
+        (upcoming.length ? "" : empty("Nenhum agendamento", "Nenhuma reserva para os filtros selecionados neste período.")) + "</div>",
     );
     const filters =
-      state.role !== "docente"
-        ? '<div class="page-toolbar">' +
-          localSelect("block", "Bloco", [
+      '<div class="page-toolbar calendar-filters">' +
+      localSelect("room", "Sala específica", [
+        ["todos", "Todas as salas"],
+        ...roomList().map((r) => [r.id, r.name]),
+      ]) +
+      (state.role !== "docente"
+        ? localSelect("block", "Bloco", [
             ["todos", "Todos os blocos"],
             ...["A", "B", "C", "D"].map((b) => [b, "Bloco " + b]),
           ]) +
           localSelect("teacher", "Docente", [
             ["todos", "Todos os docentes"],
             ...data.teachers.map((t) => [t.id, t.name]),
-          ]) +
-          "</div>"
-        : "";
+          ])
+        : "") + "</div>";
     const panel =
       '<section class="calendar-panel"><div class="calendar-toolbar"><div><button type="button" class="button secondary" data-action="calendar-prev" aria-label="Período anterior">‹</button><h2>' +
       esc(label) +
@@ -1435,14 +1493,15 @@
       (f.view === "month" ? "primary" : "secondary") +
       '" data-action="calendar-month" aria-pressed="' + (f.view === "month") + '">Mês</button><button type="button" class="button ' +
       (f.view === "week" ? "primary" : "secondary") +
-      '" data-action="calendar-week" aria-pressed="' + (f.view === "week") + '">Semana</button></div></div><p class="calendar-scroll-hint">' +
+      '" data-action="calendar-week" aria-pressed="' + (f.view === "week") + '">Semana</button></div></div><p class="calendar-count" role="status">' +
+      calendarSummary(periodRows) + ' no período selecionado</p><p class="calendar-scroll-hint">' +
       icon("arrow") +
       (f.view === "day"
         ? "Deslize para os lados para ver todos os turnos"
         : "Deslize para os lados para ver todos os dias") +
       '</p><div class="calendar-scroll" tabindex="0" role="region" aria-label="Grade de reservas. Role horizontalmente para consultar todas as colunas.">' +
       (f.view === "month" ? monthGrid() : f.view === "day" ? dayGrid() : weekGrid()) +
-      "</div></section>";
+      "</div>" + calendarLegend() + "</section>";
     return (
       heading(
         state.role === "docente"
@@ -1637,6 +1696,8 @@
     scopeArea,
     roomList,
     local,
+    selectedValues,
+    filterMatches,
     errorBox,
     formActions,
     ownAllocations,
@@ -1646,6 +1707,9 @@
     availability,
     allCalendarEvents,
     calendarRows,
+    calendarEventStyle,
+    calendarRange,
+    calendarSummary,
     eventButton,
     externalForm,
     teacherSchedule,

@@ -50,6 +50,13 @@
   dialog.addEventListener?.("cancel", () => unlockPageScroll());
   // Esc fecha o modal mesmo quando o fechamento nativo do <dialog> não dispara.
   document.addEventListener("keydown", (event) => {
+    const dropdown = event.key === "Escape" ? event.target?.closest?.(".multi-filter[open]") : null;
+    if (dropdown) {
+      event.preventDefault();
+      dropdown.open = false;
+      dropdown.querySelector("summary").focus();
+      return;
+    }
     if (event.key !== "Escape" || !dialog.open) return;
     event.preventDefault();
     externalCancellation = null;
@@ -748,14 +755,15 @@
       true,
     );
   }
-  function calendarDay(day) {
+  function calendarDay(day, shiftId) {
     const list = P.calendarRows()
-      .filter((a) => a.date === day)
+      .filter((a) => a.date === day && (!shiftId || a.shift === shiftId))
       .sort((a, b) => a.start - b.start);
     const isToday = day === P.today;
     show(
       isToday ? "Reservas de hoje" : "Reservas de " + date(day, true),
       (isToday ? date(day, true) + " · " : "") +
+        (shiftId ? U.shift(shiftId) + " · " : "") +
         (list.length
           ? list.length + (list.length === 1 ? " agendamento" : " agendamentos")
           : "nenhum agendamento"),
@@ -763,7 +771,7 @@
         list
           .map(
             (a) =>
-              '<button type="button" class="today-item" data-action="booking-detail" data-id="' +
+              '<button type="button" class="today-item course-event"' + P.calendarEventStyle(a) + ' data-action="booking-detail" data-id="' +
               a.key +
               '"><div><strong>' +
               esc(room(a.roomId).name) +
@@ -875,6 +883,10 @@
     }
   }
   document.addEventListener("click", (event) => {
+    const activeFilter = event.target.closest?.(".multi-filter");
+    for (const dropdown of document.querySelectorAll?.(".multi-filter[open]") || []) {
+      if (dropdown !== activeFilter) dropdown.open = false;
+    }
     const el = event.target.closest?.("[data-action]");
     if (!el) return;
     const action = el.dataset.action,
@@ -1040,7 +1052,7 @@
         const f = P.local();
         f.teacher = P.teacherId;
       }
-      calendarDay(id);
+      calendarDay(id, el.dataset.shift);
       return;
     }
     if (action.startsWith("calendar-")) {
@@ -1050,6 +1062,22 @@
     }
   });
   document.addEventListener("change", (event) => {
+    if (event.target.dataset.localMulti) {
+      const key = event.target.dataset.localMulti, value = event.target.value;
+      const scrollTop = document.getElementById("local-" + key).querySelector(".multi-filter-options").scrollTop;
+      const selected = new Set(P.selectedValues(P.local()[key]));
+      if (value === "todos") selected.clear();
+      else if (event.target.checked) selected.add(value);
+      else selected.delete(value);
+      P.local()[key] = [...selected];
+      P.local().page = 0;
+      S.render();
+      const dropdown = document.getElementById("local-" + key);
+      dropdown.open = true;
+      dropdown.querySelector(".multi-filter-options").scrollTop = scrollTop;
+      dropdown.querySelector('input[value="' + value + '"]')?.focus({ preventScroll: true });
+      return;
+    }
     if (["booking-subject", "booking-date"].includes(event.target.id))
       updateDisciplineBalance();
     if (event.target.matches("[data-room-block]") && state.role === "diretor") {

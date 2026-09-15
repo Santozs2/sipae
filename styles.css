@@ -1427,14 +1427,23 @@ tbody tr[data-report-kind]:focus-visible {
 .strategic-grid .wide {
   grid-column: 1 / -1;
 }
-.strategic-grid > .director-chart-stack {
-  display: flex;
-  flex-direction: column;
+.director-dashboard-grid {
+  grid-template-areas: "chart availability" "rankings blocks";
+  align-items: stretch;
+}
+.director-occupancy { grid-area: chart; }
+.director-availability { grid-area: availability; }
+.director-rankings { grid-area: rankings; }
+.director-blocks { grid-area: blocks; }
+@media (max-width: 1000px) {
+  .director-dashboard-grid {
+    grid-template-areas: "chart" "availability" "rankings" "blocks";
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .director-occupancy {
   display: flex;
   flex-direction: column;
-  flex: 1;
 }
 .director-occupancy > .card-body {
   display: flex;
@@ -1452,7 +1461,31 @@ tbody tr[data-report-kind]:focus-visible {
   height: 100%;
 }
 .director-availability .scroll-list {
-  max-height: 300px;
+  max-height: 240px;
+}
+.director-occupancy .responsive-column-chart {
+  height: 280px;
+  min-height: 280px;
+}
+.director-rankings .rank-row {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  gap: 10px;
+}
+.director-rankings {
+  flex: 1;
+}
+.director-rankings > .card {
+  display: flex;
+  flex-direction: column;
+}
+.director-rankings .card-body {
+  flex: 1;
+}
+@media (min-width: 1001px) and (max-width: 1150px) {
+  .top-pair.director-rankings {
+    grid-template-columns: 1fr;
+  }
 }
 .top-pair {
   display: grid;

@@ -706,6 +706,99 @@
   border-color: #c77e8c;
   color: #ae6576;
 }
+.calendar-event.course-event {
+  border-left: 3px solid var(--course-color);
+  background: var(--course-bg);
+  color: var(--course-color);
+}
+.today-item.course-event {
+  border-left: 3px solid var(--course-color);
+  padding-left: 12px;
+}
+.calendar-legend {
+  padding: 16px 20px;
+  border-top: 1px solid var(--line);
+  font-size: .75rem;
+}
+.calendar-legend summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.calendar-legend > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin-top: 14px;
+}
+.calendar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.calendar-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--course-color);
+  flex-shrink: 0;
+}
+.calendar-filters select {
+  max-width: 100%;
+}
+.multi-filter {
+  position: relative;
+  min-width: 160px;
+  max-width: 100%;
+  font-size: .8rem;
+}
+.multi-filter summary {
+  padding: 11px 14px;
+  background: #fff;
+  border: 1px solid #dce3ed;
+  border-radius: 9px;
+  cursor: pointer;
+  color: #40516a;
+}
+.multi-filter-options {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 5px);
+  left: 0;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(330px, calc(100vw - 64px));
+  max-height: 300px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #dce3ed;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px #20355026;
+}
+.multi-filter-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  cursor: pointer;
+}
+.multi-filter-options input {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: var(--brand);
+}
+.multi-filter-options label:hover { background: #f3f6fa; }
+@media (max-width: 700px) {
+  .multi-filter { width: 100%; }
+  .multi-filter-options { width: 100%; }
+}
+.calendar-count {
+  padding: 0 20px 12px;
+  font-size: .8rem;
+  color: #526075;
+}
 .calendar-more {
   padding: 3px;
   background: none;

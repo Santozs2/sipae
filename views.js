@@ -405,7 +405,7 @@
     return (
       heading(
         "DIREÇÃO · SENAI SÃO JOSÉ DO RIO PRETO",
-        greeting + ", Sr. " + esc(directorName) + "<span>.</span>",
+        greeting + ", Sr. " + esc(directorName),
         "Compare os blocos, acompanhe tendências e direcione o próximo passo.",
         '<div class="date-pill">' +
           icon("calendar") +
@@ -445,7 +445,7 @@
         "people",
       ) +
       "</div>" +
-      '<div class="strategic-grid"><div class="stack director-chart-stack">' +
+      '<div class="strategic-grid director-dashboard-grid">' +
       card(
         "Ocupação em perspectiva",
         "Janeiro a dezembro de " + year + " · unidade inteira",
@@ -468,18 +468,7 @@
             : "Nenhuma ocupação registrada no ano.",
         },
       ) +
-      '</div><div class="stack">' +
-      card(
-        "Como estão os blocos?",
-        M.periods.semana.label + " · acompanhamento da semana",
-        comparison({ period: "semana" }),
-        {
-          insight:
-            "A ocupação considera as horas disponíveis nos ambientes de cada bloco.",
-        },
-      ) +
-      U.availableRoomsCard({ className: "director-availability" }) +
-      '</div><div class="top-pair wide">' +
+      '<div class="top-pair director-rankings">' +
       card(
         "Os 3 ambientes com maior Ocupação",
         M.periods.semana.label + " · maiores índices de ocupação",
@@ -506,7 +495,15 @@
             : "Nenhum ambiente ativo no recorte.",
         },
       ) +
-      "</div></div>" +
+      '</div>' +
+      U.availableRoomsCard({ className: "director-availability" }) +
+      card(
+        "Como estão os blocos?",
+        M.periods.semana.label + " · acompanhamento da semana",
+        comparison({ period: "semana" }),
+        { className: "director-blocks", insight: "A ocupação considera as horas disponíveis nos ambientes de cada bloco." },
+      ) +
+      "</div>" +
       methodology(
         "Taxas da unidade são ponderadas pelas horas disponíveis; os percentuais dos blocos não são somados.",
       )
