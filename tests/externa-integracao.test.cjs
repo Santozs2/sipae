@@ -25,7 +25,7 @@ function setup(role = 'diretor') {
   context.window = { addEventListener() {}, scrollTo() {} };
   const load = (file) => vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
   for (const file of ['data.js', 'metrics.js', 'app.js']) load(file);
-  const S = context.SIPAE;
+  const S = context.MAPPA;
   S.render = () => {};
   S.toast = (message) => toasts.push(message);
   for (const file of ['pages.js', 'actions.js', 'external-booking.js']) load(file);

@@ -1,11 +1,11 @@
 (function () {
   "use strict";
-  const S = SIPAE, { data, state, M, U, P } = S;
+  const S = MAPPA, { data, state, M, U, P } = S;
   const { esc, icon, heading, time, hours, date } = U;
   const drafts = {}, submitted = new Set();
   const teachers = () => data.teachers.filter((t) => t.status !== "inativo");
   function query() {
-    if (!drafts[state.role]) drafts[state.role] = { date: SIPAE_DATA.localDate(), teacherId: "t4", classId: "c3", duration: "2", resources: [], resourcesOpen: false };
+    if (!drafts[state.role]) drafts[state.role] = { date: MAPPA_DATA.localDate(), teacherId: "t4", classId: "c3", duration: "2", resources: [], resourcesOpen: false };
     const q = drafts[state.role];
     if (state.role === "docente") q.teacherId = P.teacherId;
     const teacher = teachers().find((t) => t.id === q.teacherId) || teachers()[0];
@@ -23,7 +23,7 @@
   }
   function resultHtml(q) {
     if (!submitted.has(state.role)) return '<div class="finder-intro">' + icon("search") + '<h2>O ambiente certo para sua aula</h2><p>Informe o planejamento e veja horários compatíveis com a turma, o docente e os recursos necessários.</p><div><span>01 · Planeje a aula</span><span>02 · Escolha o ambiente</span><span>03 · Confirme a reserva</span></div></div>';
-    const result = SIPAE_ROOM_SEARCH.search(data, M, q, state.role);
+    const result = MAPPA_ROOM_SEARCH.search(data, M, q, state.role);
     if (result.error) return '<div class="finder-empty"><h2>Revise sua busca</h2><p role="alert">' + esc(result.error) + '</p></div>';
     if (!result.rooms.length) return '<div class="finder-empty">' + icon("calendar") + '<h2>Nenhum horário compatível</h2><p>Tente outra data, uma duração menor ou menos equipamentos. A busca considera a disponibilidade da sala, da turma e do docente.</p></div>';
     return '<div class="finder-result-heading"><div><span class="eyebrow">AMBIENTES COMPATÍVEIS</span><h2>' + result.rooms.length + ' ' + (result.rooms.length === 1 ? 'sala disponível' : 'salas disponíveis') + '</h2><p>' + date(q.date, true) + ' · aula de ' + hours(Number(q.duration)) + '</p></div><span class="badge green">' + icon("check") + ' Disponibilidade verificada</span></div><p class="finder-help">Escolha um horário para revisar e confirmar a reserva.</p><div class="finder-results">' + result.rooms.map(({room, slots}) => '<article class="finder-room">' + (S.RoomMedia ? S.RoomMedia.visual(room, true) : '') + '<div class="finder-room-body"><div class="finder-room-heading"><div><span class="eyebrow">BLOCO ' + esc(room.block) + '</span><h3>' + esc(room.name) + '</h3></div><span>' + room.capacity + ' lugares</span></div><div class="tags">' + room.resources.map((r) => '<span class="tag">' + esc(r) + '</span>').join('') + '</div><label for="finder-slot-' + esc(room.id) + '">Horários para esta aula</label><select id="finder-slot-' + esc(room.id) + '">' + slots.map((slot) => '<option value="' + slot.start + '">' + time(slot.start) + '–' + time(slot.end) + '</option>').join('') + '</select><button type="button" class="button primary" data-finder-book="' + esc(room.id) + '">Agendar neste ambiente ' + icon("arrow") + '</button></div></article>').join('') + '</div><p class="role-note">Os horários são conferidos novamente ao confirmar. O agendamento é direto.</p>';
@@ -81,8 +81,8 @@
   function page() {
     const q = query(), teacher = data.teachers.find((t) => t.id === q.teacherId), group = data.classes.find((c) => c.id === q.classId);
     const options = (rows, value) => P.options(rows, value);
-    return heading(state.role === 'docente' ? 'DOCENTE · PLANEJAMENTO' : 'PLANEJAMENTO DE AULAS', 'Encontrar sala', 'Encontre um espaço que combine com a sua aula.') + '<div class="finder-layout"><section class="card finder-filters" aria-label="Planejamento da aula"><div class="card-head"><div><h2>Planeje a aula</h2><p>A busca usa o turno da turma.</p></div></div><form id="room-finder-form"><div class="form-grid">' +
-      P.field('finder-date','Data da aula',P.input('finder-date',q.date,'date','required min="' + SIPAE_DATA.localDate() + '"'),true) +
+    return heading(state.role === 'docente' ? 'DOCENTE · PLANEJAMENTO' : 'PLANEJAMENTO DE AULAS', 'Encontrar sala', 'Busque por data, horário, capacidade e recursos.') + '<div class="finder-layout"><section class="card finder-filters" aria-label="Planejamento da aula"><div class="card-head"><div><h2>Planeje a aula</h2><p>A busca usa o turno da turma.</p></div></div><form id="room-finder-form"><div class="form-grid">' +
+      P.field('finder-date','Data da aula',P.input('finder-date',q.date,'date','required min="' + MAPPA_DATA.localDate() + '"'),true) +
       (state.role === 'docente' ? '' : P.field('finder-teacher','Docente',P.select('finder-teacher',teachers().map((t)=>[t.id,t.name]),q.teacherId),true)) +
       P.field('finder-class','Turma',P.select('finder-class',data.classes.map((c)=>[c.id,c.code+' · '+U.shift(c.shift)+' · '+c.students+' alunos']),q.classId),true) +
       P.field('finder-subject','Disciplina',P.select('finder-subject',data.teacherSubjects.filter((s)=>s.teacherId===q.teacherId).map((s)=>[s.id,s.name]),q.disciplineId),true) +
@@ -153,7 +153,7 @@
   document.addEventListener('click',(event)=> {
     const button=event.target.closest?.('[data-finder-book]'); if (!button || state.page!=='encontrar' || !submitted.has(state.role)) return;
     const roomId=button.dataset.finderBook, start=Number(document.getElementById('finder-slot-'+roomId)?.value);
-    const result=SIPAE_ROOM_SEARCH.search(data,M,query(),state.role);
+    const result=MAPPA_ROOM_SEARCH.search(data,M,query(),state.role);
     const slot=result.rooms.find((r)=>r.room.id===roomId)?.slots.find((s)=>s.start===start);
     if (!slot) { S.toast('Este horário não está mais disponível. Faça uma nova busca.'); S.render(); return; }
     P.openBooking({...slot});

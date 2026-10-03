@@ -3,7 +3,7 @@
   "use strict";
   const context = document.modelContext;
   if (!context || typeof context.registerTool !== "function") return;
-  const S = globalThis.SIPAE,
+  const S = globalThis.MAPPA,
     lifecycle = new AbortController();
   function noExtra(input, allowed) {
     if (
@@ -16,8 +16,8 @@
   }
   const tools = [
     {
-      name: "consultar_indicadores_sipae",
-      title: "Consultar indicadores do SIPAE",
+      name: "consultar_indicadores_mappa",
+      title: "Consultar indicadores do Mappa",
       description:
         "Consulta os indicadores calculados do perfil e dos filtros atualmente visíveis, sem alterar dados.",
       inputSchema: {

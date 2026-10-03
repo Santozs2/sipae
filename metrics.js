@@ -3,7 +3,7 @@
   const sum = (list, fn = (x) => x) => list.reduce((n, x) => n + fn(x), 0);
   const mean = (list) => (list.length ? sum(list) / list.length : null);
   const ratio = (n, d) => (d > 0 ? (n / d) * 100 : 0);
-  const current = new Date(SIPAE_DATA.localDate() + "T12:00:00Z");
+  const current = new Date(MAPPA_DATA.localDate() + "T12:00:00Z");
   const monthDate = (offset, day = 1) => new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth() + offset, day, 12));
   const labelMonth = (d) => new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
   const monday = new Date(current);
@@ -11,10 +11,10 @@
   const friday = new Date(monday);
   friday.setUTCDate(friday.getUTCDate() + 4);
   const periods = {
-    semana: { start: SIPAE_DATA.dateString(monday), end: SIPAE_DATA.dateString(friday), label: "Semana atual" },
-    mes: { start: SIPAE_DATA.dateString(monthDate(0)), end: SIPAE_DATA.dateString(monthDate(1, 0)), label: labelMonth(current) },
-    anterior: { start: SIPAE_DATA.dateString(monthDate(-1)), end: SIPAE_DATA.dateString(monthDate(0, 0)), label: labelMonth(monthDate(-1)) },
-    semestre: { start: SIPAE_DATA.dateString(monthDate(-5)), end: SIPAE_DATA.dateString(monthDate(1, 0)), label: labelMonth(monthDate(-5)) + " a " + labelMonth(current) },
+    semana: { start: MAPPA_DATA.dateString(monday), end: MAPPA_DATA.dateString(friday), label: "Semana atual" },
+    mes: { start: MAPPA_DATA.dateString(monthDate(0)), end: MAPPA_DATA.dateString(monthDate(1, 0)), label: labelMonth(current) },
+    anterior: { start: MAPPA_DATA.dateString(monthDate(-1)), end: MAPPA_DATA.dateString(monthDate(0, 0)), label: labelMonth(monthDate(-1)) },
+    semestre: { start: MAPPA_DATA.dateString(monthDate(-5)), end: MAPPA_DATA.dateString(monthDate(1, 0)), label: labelMonth(monthDate(-5)) + " a " + labelMonth(current) },
   };
   function period(f = {}) {
     return f.start && f.end
@@ -49,7 +49,7 @@
   }
   function businessDays(f) {
     const p = period(f);
-    return SIPAE_DATA.dates(p.start, p.end).filter((date) => {
+    return MAPPA_DATA.dates(p.start, p.end).filter((date) => {
       const day = new Date(date + "T12:00Z").getUTCDay();
       return day > 0 && day < 6;
     });
@@ -157,10 +157,10 @@
     const p = period(f);
     const result = [];
     const cursor = new Date(p.start.slice(0, 7) + "-01T12:00:00Z");
-    while (SIPAE_DATA.dateString(cursor) <= p.end) {
+    while (MAPPA_DATA.dateString(cursor) <= p.end) {
       const m = cursor.getUTCMonth() + 1;
-      const start = SIPAE_DATA.dateString(cursor);
-      const end = SIPAE_DATA.dateString(new Date(Date.UTC(cursor.getUTCFullYear(), m, 0, 12)));
+      const start = MAPPA_DATA.dateString(cursor);
+      const end = MAPPA_DATA.dateString(new Date(Date.UTC(cursor.getUTCFullYear(), m, 0, 12)));
       const filter = {
         ...f,
         start: start > p.start ? start : p.start,
@@ -381,7 +381,7 @@
       );
     return null;
   }
-  global.SIPAE_METRICS = {
+  global.MAPPA_METRICS = {
     sum,
     mean,
     ratio,

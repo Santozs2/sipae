@@ -23,7 +23,7 @@ function setup(role = 'diretor') {
   context.window = { addEventListener() {}, scrollTo() {} };
   for (const file of ['data.js', 'metrics.js', 'app.js', 'charts.js', 'views.js', 'pages.js', 'actions.js'])
     vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
-  const S = context.SIPAE;
+  const S = context.MAPPA;
   S.state.role = role; S.state.page = 'calendario';
   const base = { date: S.data.today, teacherId: 't4', classId: 'c1', roomId: 'r1',
     shift: 'manha', start: 8, end: 9, status: 'confirmada', areaId: 'unidade' };

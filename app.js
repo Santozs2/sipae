@@ -1,7 +1,7 @@
 (function (global) {
   "use strict";
-  const data = SIPAE_DATA.create(),
-    M = SIPAE_METRICS;
+  const data = MAPPA_DATA.create(),
+    M = MAPPA_METRICS;
   const state = {
     role: "coordenador",
     page: "dashboard",
@@ -134,7 +134,6 @@
       "</div>" +
       (options.insight
         ? '<div class="card-foot">' +
-          icon("info") +
           "<span>" +
           options.insight +
           "</span></div>"
@@ -222,9 +221,7 @@
   }
   function heading(eyebrow, title, description, actions = "") {
     return (
-      '<div class="page-heading"><div><span class="eyebrow">' +
-      esc(eyebrow) +
-      "</span><h1>" +
+      '<div class="page-heading"><div><h1>' +
       title +
       "</h1><p>" +
       esc(description) +
@@ -310,7 +307,7 @@
   }
   function availableRoomsCard(options = {}) {
     const available = availableRoomsToday();
-    return card("Ambientes disponíveis hoje", "Horários livres restantes, por turno", availableRoomsList(available), {
+    return card("Salas livres hoje", "Horários restantes por turno", availableRoomsList(available), {
       count: available.length,
       insight: "Disponibilidade calculada a partir do horário de entrada. Ambientes em manutenção não são exibidos.",
       ...options,
@@ -338,20 +335,19 @@
     const currentHour = new Date(data.reference).getHours(),
       greeting = currentHour < 12 ? "Bom dia" : currentHour < 18 ? "Boa tarde" : "Boa noite";
     return heading(
-      "COORDENAÇÃO", greeting + ", " + esc(data.managementProfiles.coordenador.name.split(" ")[0]),
-      "Acompanhe as aulas da unidade e consulte os horários disponíveis hoje.",
+      "", "Visão geral",
+      greeting + ", " + data.managementProfiles.coordenador.name.split(" ")[0] + ". Aqui está o movimento da unidade hoje.",
       calendarPill() + reportLink("coordenador"),
     ) + '<div class="kpi-grid">' +
-      kpi("Aulas agendadas hoje", number(todayItems.length), "", "Agendamentos da unidade na data atual", "calendar") +
-      kpi("Docentes com aulas hoje", number(new Set(todayItems.map((a) => a.teacherId)).size), "", "Profissionais com aulas na unidade", "people") +
+      kpi("Aulas hoje", number(todayItems.length), "", "Agendadas para a data atual", "calendar") +
+      kpi("Docentes em aula", number(new Set(todayItems.map((a) => a.teacherId)).size), "", "Com pelo menos uma aula hoje", "people") +
       kpi("Ocupação da unidade hoje", number(stats.occupancy, 1), "%", hours(stats.used) + " de " + hours(stats.available) + " disponíveis", "chart") +
       kpi("Horas de aula hoje", number(stats.hours, 1), "h", "Total de aulas agendadas para hoje", "clock") +
       '</div><div class="dashboard-grid"><div class="stack">' +
-      card("Próximos agendamentos da unidade", "Aulas em andamento e futuras, em ordem de data e horário", upcomingQueue(upcoming), {
+      card("Próximas aulas", "Em andamento e a seguir", upcomingQueue(upcoming), {
         count: upcoming.length,
-        insight: "Exibindo até cinco agendamentos. Consulte os detalhes de cada reserva.",
       }) +
-      card("Agenda de hoje", longToday() + " · Unidade", agenda(todayItems), { count: todayItems.length }) +
+      card("Agenda de hoje", longToday(), agenda(todayItems), { count: todayItems.length }) +
       '</div><div class="stack">' +
       availableRoomsCard() +
       card("Ocupação por ambiente", "Data atual · " + date(data.today, true),
@@ -383,9 +379,9 @@
   }
   const menus = {
     docente: [
-      ["dashboard", "Painel do Docente", "grid"],
+      ["dashboard", "Painel", "grid"],
       ["encontrar", "Encontrar sala", "search"],
-      ["reservas", "Minhas Reservas", "file"],
+      ["reservas", "Minhas reservas", "file"],
       ["calendario", "Calendário", "calendar"],
     ],
     coordenador: [
@@ -399,10 +395,10 @@
     diretor: [
       ["dashboard", "Visão geral", "grid"],
       ["encontrar", "Encontrar sala", "search"],
-      ["calendario", "Calendário Geral", "calendar"],
+      ["calendario", "Calendário", "calendar"],
       ["salas", "Salas", "room"],
       ["docentes", "Docentes", "people"],
-      ["externas", "Reservas Externas", "file"],
+      ["externas", "Reservas externas", "file"],
       ["relatorios", "Relatório executivo", "chart"],
     ],
   };
@@ -414,7 +410,7 @@
     if (login) {
       closeMobileMenu();
       state.page = "login";
-      document.title = "SIPAE · Entrar";
+      document.title = "Mappa · Entrar";
       document.getElementById("main").innerHTML = views.login
         ? views.login()
         : "";
@@ -434,6 +430,7 @@
         "#" + state.role + "/perfil",
       );
     document.getElementById("role-switch").value = state.role;
+    syncRoleMenu();
     const profile =
       state.role === "docente"
         ? data.teachers.find((t) => t.id === "t4").name
@@ -448,10 +445,10 @@
     document.getElementById("avatar").textContent = initials(profile);
     const label =
       state.page === "perfil"
-        ? "Meu Perfil"
+        ? "Meu perfil"
         : menus[state.role].find((p) => p[0] === state.page)[1];
     document.getElementById("page-crumb").textContent = label;
-    document.title = "SIPAE · " + label;
+    document.title = "Mappa · " + label;
     document.getElementById("navigation").innerHTML =
       menus[state.role]
         .map(
@@ -472,10 +469,10 @@
         .join("");
     const view = views[state.role + "/" + state.page];
     document.getElementById("main").innerHTML = view ? view() : "";
-    global.SIPAE?.U?.resizeColumnCharts?.();
+    global.MAPPA?.U?.resizeColumnCharts?.();
     document.querySelector(".brand").href = "#" + state.role + "/dashboard";
     closeMobileMenu();
-    if (global.SIPAE?.P?.afterRender) global.SIPAE.P.afterRender();
+    if (global.MAPPA?.P?.afterRender) global.MAPPA.P.afterRender();
   }
   document.addEventListener("click", (event) => {
     const exp = event.target.closest?.("[data-export]");
@@ -495,6 +492,57 @@
       (state.page === "perfil" || menus[event.target.value].some((p) => p[0] === state.page)
         ? state.page
         : "dashboard");
+  });
+  // Menu de perfil próprio: o <select> oculto continua sendo a fonte do valor.
+  const roleTrigger = document.getElementById("role-trigger"),
+    roleOptions = document.getElementById("role-options");
+  const roleItems = () => [...roleOptions.querySelectorAll("[role=option]")];
+  function syncRoleMenu() {
+    const labels = { docente: "Docente", coordenador: "Coordenação", diretor: "Direção" };
+    document.getElementById("role-trigger-label").textContent = labels[state.role];
+    (document.getElementById("role-options").querySelectorAll?.("[role=option]") || []).forEach((li) => li.setAttribute("aria-selected", String(li.dataset.role === state.role)));
+  }
+  function setRoleMenu(open) {
+    roleOptions.hidden = !open;
+    roleTrigger.setAttribute("aria-expanded", String(open));
+    if (open) {
+      const current = roleItems().find((li) => li.dataset.role === state.role);
+      focusRoleItem(current || roleItems()[0]);
+    }
+  }
+  function focusRoleItem(li) {
+    roleItems().forEach((x) => x.classList.toggle("active", x === li));
+    roleOptions.setAttribute("aria-activedescendant", li.id || (li.id = "role-opt-" + li.dataset.role));
+    roleOptions.focus({ preventScroll: true });
+  }
+  function chooseRole(role) {
+    setRoleMenu(false);
+    roleTrigger.focus();
+    if (role === state.role) return;
+    const select = document.getElementById("role-switch");
+    select.value = role;
+    select.dispatchEvent(new Event("change"));
+  }
+  roleTrigger.addEventListener("click", () => setRoleMenu(roleOptions.hidden));
+  roleOptions.addEventListener("click", (event) => {
+    const li = event.target.closest("[role=option]");
+    if (li) chooseRole(li.dataset.role);
+  });
+  roleOptions.addEventListener("keydown", (event) => {
+    const items = roleItems(), index = items.findIndex((x) => x.classList.contains("active"));
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      focusRoleItem(items[(index + (event.key === "ArrowDown" ? 1 : items.length - 1)) % items.length]);
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      chooseRole(items[index].dataset.role);
+    } else if (event.key === "Escape" || event.key === "Tab") {
+      setRoleMenu(false);
+      if (event.key === "Escape") roleTrigger.focus();
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (!roleOptions.hidden && !event.target.closest("#role-menu")) setRoleMenu(false);
   });
   function closeMobileMenu(returnFocus = false) {
     const sidebar = document.getElementById("sidebar");
@@ -544,7 +592,7 @@
     render();
     window.scrollTo(0, 0);
   });
-  global.SIPAE = {
+  global.MAPPA = {
     data,
     M,
     state,

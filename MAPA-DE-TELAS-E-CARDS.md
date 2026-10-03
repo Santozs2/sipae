@@ -1,4 +1,4 @@
-# SIPAE — mapa de telas, cards e arquivos
+# Mappa — mapa de telas, cards e arquivos
 
 O pacote usa navegação por fragmento na página `index.html`. Todos os dados são demonstrativos e ficam em memória durante a sessão da página. Há uma única Coordenação para toda a unidade, compartilhada pelas salas, turmas e docentes; os blocos indicam apenas a localização física dos ambientes.
 
@@ -65,7 +65,7 @@ O **Gerenciamento de Docentes** apresenta, para cada docente, a situação no ho
 
 A navegação mantém gerenciamento de todas as salas, gerenciamento de todos os docentes e calendário escolar da unidade. Os calendários dos três perfis permitem filtrar uma sala específica nas visualizações de dia, mês e semana. Coordenação e Direção também filtram por bloco físico e docente. As cores identificam o curso, com legenda expansível; turmas do mesmo curso mantêm a mesma cor. O resumo separa aulas de reservas externas e respeita o período e os filtros. Os botões de total da semana abrem somente o turno indicado; a lista lateral apresenta todos os registros contados, com rolagem própria. As listagens e cadastros não possuem divisão ou filtros por áreas; os campos correspondentes também foram removidos dos formulários. Não há fila de aprovação nem painel de ocorrências de conflitos internos. As verificações de disponibilidade continuam sendo aplicadas ao agendar.
 
-O avatar na faixa inferior abre o Perfil do Coordenador. A página apresenta nome, e-mail, telefone e NIF; o formulário permite alterar nome e contatos durante a sessão. A função é somente leitura, e o campo de área foi removido. O botão **Sair** fica ao lado do nome, na mesma posição usada pelo Docente, e o bloco institucional foi removido da barra lateral.
+O avatar na faixa inferior abre o Perfil do Coordenador. A página apresenta nome, e-mail, telefone e matrícula; o formulário permite alterar nome e contatos durante a sessão. A função é somente leitura, e o campo de área foi removido. O botão **Sair** fica ao lado do nome, na mesma posição usada pelo Docente, e o bloco institucional foi removido da barra lateral.
 
 ## Direção e reservas externas
 
@@ -89,7 +89,7 @@ Os cards e detalhes dos ambientes usam imagens ilustrativas identificadas. Açõ
 
 As notificações são abertas pelo sino do cabeçalho. Confirmações usam verde, informações e próximos horários usam azul, cancelamentos usam laranja. Texto e ícone identificam o assunto; a cor complementa essa informação. A ação **Marcar todas como lidas** mantém o conteúdo legível.
 
-Também existem modais de nova reserva, detalhes, cancelamento, consulta diária de sala, cadastro/edição de salas e docentes, reserva externa e recuperação do acesso demonstrativo. Para o acesso de demonstração, use NIF **123456789** e senha **sipae2026**.
+Também existem modais de nova reserva, detalhes, cancelamento, consulta diária de sala, cadastro/edição de salas e docentes, reserva externa e recuperação do acesso demonstrativo. Para o acesso de demonstração, use matrícula **123456789** e senha **mappa2026**.
 
 ## Dados, regras e métricas
 

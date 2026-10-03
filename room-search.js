@@ -11,7 +11,7 @@
     const day = new Date(query.date + "T12:00:00Z");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(query.date || "") || !Number.isFinite(day.getTime()) ||
         day.toISOString().slice(0, 10) !== query.date) return fail("Informe uma data válida.");
-    const today = SIPAE_DATA.localDate(now);
+    const today = MAPPA_DATA.localDate(now);
     if (query.date < today) return fail("Escolha uma data a partir de hoje.");
     if (!teacher || teacher.status === "inativo" || !group) return fail("Selecione uma turma e um docente ativo.");
     if (!Number.isFinite(duration) || duration < 0.5 || duration > 4 || !Number.isInteger(duration * 4))
@@ -39,5 +39,5 @@
     rooms.sort((a, b) => a.slots[0].start - b.slots[0].start || a.room.capacity - b.room.capacity || a.room.name.localeCompare(b.room.name, "pt-BR"));
     return { error: "", rooms };
   }
-  global.SIPAE_ROOM_SEARCH = { search };
+  global.MAPPA_ROOM_SEARCH = { search };
 })(globalThis);

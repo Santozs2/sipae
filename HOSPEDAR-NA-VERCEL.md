@@ -1,20 +1,20 @@
-# Como hospedar o SIPAE na Vercel
+# Como hospedar o Mappa na Vercel
 
 Guia conferido na documentação oficial em **15/09/2026**. A publicação ainda não foi executada.
 
 Este pacote é um site estático em HTML, CSS e JavaScript. A pasta que deve ser publicada é:
 
 ```text
-C:\Users\angel\OneDrive\Documents\ChatGPT\malta\SIPAE-html-css-js
+C:\caminho\para\MAPPA-html-css-js
 ```
 
-Ela contém `index.html`, os arquivos `.css` e os módulos `.js`. A pasta superior `malta` possui outro aplicativo e não deve ser enviada inteira para publicar esta versão. O ZIP `SIPAE-html-css-js-atualizado.zip` reúne o pacote deste projeto.
+Ela contém `index.html`, os arquivos `.css` e os módulos `.js`. O ZIP `MAPPA-html-css-js-atualizado.zip` reúne o pacote deste projeto.
 
 ## Opção rápida: enviar o ZIP pelo Vercel Drop
 
 1. Entre na sua conta e abra [Vercel Drop](https://vercel.com/drop).
-2. Arraste `SIPAE-html-css-js-atualizado.zip` para a página. Também é possível selecionar a pasta `SIPAE-html-css-js` já extraída.
-3. Escolha sua conta/equipe e um nome para o projeto, por exemplo, `sipae-demo`.
+2. Arraste `MAPPA-html-css-js-atualizado.zip` para a página. Também é possível selecionar a pasta `MAPPA-html-css-js` já extraída.
+3. Escolha sua conta/equipe e um nome para o projeto, por exemplo, `mappa-demo`.
 4. Confira se `index.html` está no primeiro nível dos arquivos. Se a interface pedir a página inicial em **Root (/)**, selecione `index.html`.
 5. Clique em **Deploy** e aguarde a URL gerada. Esse envio publica diretamente o projeto.
 
@@ -24,7 +24,7 @@ O Drop aceita sites estáticos sem Git ou terminal. Cada envio pelo Drop cria um
 
 ### 1. Colocar o pacote no GitHub
 
-Crie um repositório próprio, por exemplo, `sipae-demo`. Envie o **conteúdo extraído** de `SIPAE-html-css-js`, incluindo todos os `.html`, `.css` e `.js`, para a raiz desse repositório. O `index.html` deve aparecer logo ao abrir a lista de arquivos.
+Crie um repositório próprio, por exemplo, `mappa-demo`. Envie o **conteúdo extraído** de `MAPPA-html-css-js`, incluindo todos os `.html`, `.css` e `.js`, para a raiz desse repositório. O `index.html` deve aparecer logo ao abrir a lista de arquivos.
 
 No GitHub, use **Add file → Upload files**, arraste os arquivos/pastas, escreva uma mensagem para a alteração e conclua o commit. Se optar por uma nova branch, conclua também a integração dela à branch que será publicada. Enviar somente o ZIP ao repositório não fornece os arquivos extraídos que a Vercel precisa servir. [Como enviar arquivos ao GitHub](https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository)
 
@@ -34,11 +34,11 @@ No [painel da Vercel](https://vercel.com/dashboard), escolha **New Project** —
 
 ### 3. Preencher os campos
 
-| Campo | Valor para este SIPAE |
+| Campo | Valor para este Mappa |
 | --- | --- |
-| Project Name | Um nome de sua escolha, como `sipae-demo` |
+| Project Name | Um nome de sua escolha, como `mappa-demo` |
 | Framework Preset | **Other** |
-| Root Directory | Raiz do repositório, se o `index.html` estiver nela. Se estiver dentro de uma subpasta `SIPAE-html-css-js`, selecione essa subpasta. |
+| Root Directory | Raiz do repositório, se o `index.html` estiver nela. Se estiver dentro de uma subpasta `MAPPA-html-css-js`, selecione essa subpasta. |
 | Build Command | Ative **Override** e deixe o campo **vazio**. |
 | Output Directory | **`.`** (um ponto), relativo à Root Directory selecionada. |
 | Install Command | Deixe sem comando personalizado. Este pacote não tem dependências para instalar. |
@@ -64,19 +64,19 @@ A CLI oferece instalação pelo npm e login pela conta Vercel. [Documentação d
 Na primeira publicação desta pasta como projeto independente:
 
 ```powershell
-Set-Location -LiteralPath 'C:\Users\angel\OneDrive\Documents\ChatGPT\malta\SIPAE-html-css-js'
+Set-Location -LiteralPath 'C:\caminho\para\MAPPA-html-css-js'
 vercel.cmd --prod
 ```
 
 No assistente, escolha sua conta/equipe, crie um projeto novo, informe um nome e use `./` como diretório do código. Confira as configurações estáticas da tabela acima. Para atualizar esse mesmo projeto depois de vinculado, execute novamente `vercel.cmd --prod` nessa pasta. O comando envia os arquivos à Vercel; o parâmetro `--prod` seleciona a publicação de produção. [Comando oficial de deploy](https://vercel.com/docs/cli/deploy#prod)
 
-Se você já importou um repositório com `SIPAE-html-css-js` como subpasta, prefira atualizar pelo Git para manter a configuração de Root Directory consistente.
+Se você já importou um repositório com `MAPPA-html-css-js` como subpasta, prefira atualizar pelo Git para manter a configuração de Root Directory consistente.
 
 ## Conferir depois da publicação
 
 1. Abra a URL recebida e confira a tela de entrada e os estilos.
-2. Use o login de demonstração: NIF **123456789** e senha **sipae2026**.
-3. Selecione **Diretor** e abra o dashboard do Malta.
+2. Use o login de demonstração: matrícula **123456789** e senha **mappa2026**.
+3. Selecione **Diretor** e abra o dashboard do Ricardo Moreira.
 4. Experimente o botão de agendar reserva externa, busque uma sala e confirme um período disponível.
 5. Confira os registros no calendário e em Reservas Externas, e experimente o cancelamento.
 6. Teste também no celular e atualize uma página interna para conferir a navegação.

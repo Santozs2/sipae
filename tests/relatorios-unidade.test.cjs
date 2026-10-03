@@ -15,7 +15,7 @@ function setup() {
   context.window = {addEventListener(){},scrollTo(){}};
   for(const file of ['data.js','metrics.js','app.js','charts.js','views.js'])
     vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
-  const S = context.SIPAE;
+  const S = context.MAPPA;
   S.P = { button: (label,action,id) => `<button data-action="${action}" data-id="${id}">${label}</button>`,
     openDialog: (...args) => opened.push(args) };
   vm.runInContext(fs.readFileSync(path.join(root,'report-details.js'),'utf8'),context,{filename:'report-details.js'});
@@ -25,7 +25,7 @@ function setup() {
     for(const fn of listeners[type] || []) fn(event);
     return event;
   }
-  return {S,context,collect:context.SIPAE_REPORT_DETAILS.collect,opened,activate};
+  return {S,context,collect:context.MAPPA_REPORT_DETAILS.collect,opened,activate};
 }
 const scenario = setup();
 const {S,collect,opened,activate} = scenario;

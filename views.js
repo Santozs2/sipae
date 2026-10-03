@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const S = SIPAE,
+  const S = MAPPA,
     { data, M, state, U } = S;
   const {
     icon,
@@ -261,11 +261,11 @@
   function weeklyBookings(f, items) {
     const period = M.period(f), result = [];
     let cursor = new Date(period.start + "T12:00:00Z");
-    while (SIPAE_DATA.dateString(cursor) <= period.end) {
-      const start = SIPAE_DATA.dateString(cursor), finish = new Date(cursor);
+    while (MAPPA_DATA.dateString(cursor) <= period.end) {
+      const start = MAPPA_DATA.dateString(cursor), finish = new Date(cursor);
       const daysToSunday = (7 - cursor.getUTCDay()) % 7;
       finish.setUTCDate(finish.getUTCDate() + daysToSunday);
-      const end = SIPAE_DATA.dateString(finish) > period.end ? period.end : SIPAE_DATA.dateString(finish);
+      const end = MAPPA_DATA.dateString(finish) > period.end ? period.end : MAPPA_DATA.dateString(finish);
       result.push({ label: date(start), count: items.filter((a) => a.date >= start && a.date <= end).length });
       cursor = new Date(end + "T12:00:00Z");
       cursor.setUTCDate(cursor.getUTCDate() + 1);
@@ -277,14 +277,14 @@
   function coordinatorReports() {
     return (
       heading(
-        "COORDENAÇÃO · UNIDADE",
+        "",
         "Relatórios da unidade",
-        "Selecione o período, o turno e o docente do recorte.",
+        "Filtre por período, turno e docente.",
       ) + filterBar()
     );
   }
   function comparison(f) {
-    return '<div class="table-wrap"><table><thead><tr><th>BLOCO</th><th>OCUPAÇÃO</th><th>AULAS AGENDADAS</th><th>HORAS DE AULA</th></tr></thead><tbody>' +
+    return '<div class="table-wrap"><table><thead><tr><th>BLOCO</th><th>OCUPAÇÃO</th><th>AULAS</th><th>HORAS</th></tr></thead><tbody>' +
       blockStats(f).map((r) => '<tr><td><strong>' + esc(r.name) + '</strong></td><td><strong>' +
       pct(r.occupancy) + '</strong></td><td>' + badge(number(r.bookings), "blue") + '</td><td>' +
       hours(r.hours) + '</td></tr>').join("") + '</tbody></table></div>';
@@ -303,7 +303,8 @@
             "</strong><small>Bloco " +
             r.block +
             " · " +
-            "Unidade" +
+            r.capacity +
+            " lugares" +
             '</small></div><span class="rank-value ' +
             (hot && r.occupancy > 85 ? "hot" : "") +
             '">' +
@@ -327,8 +328,8 @@
         start.setUTCDate(start.getUTCDate() - offset);
         end.setUTCDate(end.getUTCDate() - offset);
         const stat = M.roomStats(data, {
-          start: SIPAE_DATA.dateString(start),
-          end: SIPAE_DATA.dateString(end),
+          start: MAPPA_DATA.dateString(start),
+          end: MAPPA_DATA.dateString(end),
         }).find((r) => r.id === room.id);
         if (stat.occupancy > 85) consecutive++;
         else break;
@@ -396,17 +397,12 @@
         .slice(0, 3);
     const currentHour = new Date(data.reference).getHours(),
       greeting =
-        currentHour < 12 ? "Bom dia" : currentHour < 18 ? "Boa tarde" : "Boa noite",
-      directorName = data.managementProfiles.diretor.name.split(" ").slice(-1)[0];
-    const bestMonth = history.reduce(
-      (a, b) => (b.occupancy > a.occupancy ? b : a),
-      history[0],
-    );
+        currentHour < 12 ? "Bom dia" : currentHour < 18 ? "Boa tarde" : "Boa noite";
     return (
       heading(
-        "DIREÇÃO · SENAI SÃO JOSÉ DO RIO PRETO",
-        greeting + ", Sr. " + esc(directorName),
-        "Compare os blocos, acompanhe tendências e direcione o próximo passo.",
+        "",
+        "Visão geral",
+        greeting + ", " + esc(data.managementProfiles.diretor.name.split(" ")[0]) + ". Ocupação, uso dos blocos e reservas da unidade.",
         '<div class="date-pill">' +
           icon("calendar") +
           esc(M.periods.mes.label) + "</div>" +
@@ -447,7 +443,7 @@
       "</div>" +
       '<div class="strategic-grid director-dashboard-grid">' +
       card(
-        "Ocupação em perspectiva",
+        "Ocupação mensal",
         "Janeiro a dezembro de " + year + " · unidade inteira",
         U.responsiveColumnChart(
           history.map((m) => m.label),
@@ -460,46 +456,24 @@
         ),
         {
           className: "director-occupancy",
-          insight: bestMonth && bestMonth.occupancy
-            ? bestMonth.label +
-              " apresenta o maior uso do ano, com " +
-              pct(bestMonth.occupancy) +
-              ". Meses sem agendamentos aparecem com 0%."
-            : "Nenhuma ocupação registrada no ano.",
         },
       ) +
       '<div class="top-pair director-rankings">' +
       card(
-        "Os 3 ambientes com maior Ocupação",
-        M.periods.semana.label + " · maiores índices de ocupação",
-        topRooms(mostOccupied, true),
-        {
-          insight: mostOccupied.length
-            ? esc(mostOccupied[0].name) +
-              " lidera a semana, com " +
-              pct(mostOccupied[0].occupancy) +
-              " de ocupação."
-            : "Nenhum ambiente ativo no recorte.",
-        },
+        "Mais ocupadas na semana",
+        "Três salas com maior uso",
+        topRooms(mostOccupied, true)
       ) +
       card(
-        "Os 3 ambientes com menor Ocupação",
-        M.periods.semana.label + " · menores índices de ocupação",
-        topRooms(leastOccupied, false),
-        {
-          insight: leastOccupied.length
-            ? esc(leastOccupied[0].name) +
-              " apresenta a menor ocupação da semana, com " +
-              pct(leastOccupied[0].occupancy) +
-              "."
-            : "Nenhum ambiente ativo no recorte.",
-        },
+        "Menos ocupadas na semana",
+        "Três salas com menor uso",
+        topRooms(leastOccupied, false)
       ) +
       '</div>' +
       U.availableRoomsCard({ className: "director-availability" }) +
       card(
-        "Como estão os blocos?",
-        M.periods.semana.label + " · acompanhamento da semana",
+        "Ocupação por bloco",
+        M.periods.semana.label,
         comparison({ period: "semana" }),
         { className: "director-blocks", insight: "A ocupação considera as horas disponíveis nos ambientes de cada bloco." },
       ) +
@@ -625,9 +599,9 @@
   function directorReports() {
     return (
       heading(
-        "DIREÇÃO · INTELIGÊNCIA DE PLANEJAMENTO",
+        "",
         "Relatório executivo",
-        "Selecione o período, o turno e o docente do recorte.",
+        "Filtre por período, turno e docente.",
       ) + filterBar()
     );
   }

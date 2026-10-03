@@ -22,7 +22,7 @@
 }
 .profile .avatar:hover,
 .profile .avatar:focus-visible {
-  outline: 2px solid #e38895;
+  outline: 2px solid var(--brand-light);
   outline-offset: 3px;
 }
 .credit-month {
@@ -149,11 +149,9 @@
   display: inline-block;
   background: var(--brand);
   color: white;
-  font-style: italic;
   font-weight: 800;
   padding: 8px 13px;
   border-radius: 8px;
-  letter-spacing: -1px;
   font-size: 1.5rem;
 }
 .login-brand h1 {
@@ -454,9 +452,9 @@
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  border: 3px solid #d44e62;
-  background: #f5e9ec;
-  color: #bd5367;
+  border: 3px solid var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-strong);
   font-size: 1.7rem;
   display: grid;
   place-items: center;

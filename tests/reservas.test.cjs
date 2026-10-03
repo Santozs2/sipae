@@ -1,4 +1,4 @@
-/* Independent regression probe for the SIPAE demonstration. No application edits. */
+/* Independent regression probe for the Mappa demonstration. No application edits. */
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
@@ -18,7 +18,7 @@ function setup(instant) {
   const context = vm.createContext({ Date: ClockDate, Intl, console });
   for (const file of ['data.js', 'metrics.js'])
     vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context, { filename: file });
-  const data = context.SIPAE_DATA.create();
+  const data = context.MAPPA_DATA.create();
   const listeners = {}, toasts = [];
   const dialog = { open: false, close() { this.open = false; }, showModal() { this.open = true; } };
   context.document = {
@@ -43,7 +43,7 @@ function setup(instant) {
     room: id => data.rooms.find(x => x.id === id),
     cls: id => data.classes.find(x => x.id === id),
   };
-  context.SIPAE = { data, M: context.SIPAE_METRICS, state: { role: 'docente' }, U, P,
+  context.MAPPA = { data, M: context.MAPPA_METRICS, state: { role: 'docente' }, U, P,
     render() {}, toast(message) { toasts.push(message); } };
   vm.runInContext(fs.readFileSync(path.join(root, 'actions.js'), 'utf8'), context, { filename: 'actions.js' });
   function submitForm(type, values, extra = {}) {
@@ -58,7 +58,7 @@ function setup(instant) {
     const target = { closest(selector) { return selector === '[data-action]' ? el : null; } };
     listeners.click.forEach(fn => fn({ target, preventDefault() {} }));
   }
-  return { context, data, M: context.SIPAE_METRICS, P, submit, submitForm, click, toasts };
+  return { context, data, M: context.MAPPA_METRICS, P, submit, submitForm, click, toasts };
 }
 const instants = [
   '2026-09-10T23:30:00-03:00', '2026-09-13T12:00:00-03:00',
@@ -182,14 +182,14 @@ check('Teacher can book an available room from any former group in own name', ()
   assert.equal(record.roomId,'r7'); assert.equal(record.teacherId,'t4'); assert.equal(record.areaId,'unidade');
 });
 check('Coordinator books any teacher and cancels their future reservation across the unit', () => {
-  const a=setup('2026-09-10T12:00:00-03:00'); a.context.SIPAE.state.role='coordenador';
+  const a=setup('2026-09-10T12:00:00-03:00'); a.context.MAPPA.state.role='coordenador';
   const subject=a.data.teacherSubjects.find(s=>s.teacherId==='t7');
   assert.equal(a.submit({...form,'booking-room':'r1','booking-teacher':'t7','booking-subject':subject.name,'booking-repeat':'1'}),'');
   const record=a.data.allocations.at(-1); assert.equal(record.teacherId,'t7'); assert.equal(record.areaId,'unidade');
   a.click('booking-delete-confirm','a:'+record.id); assert.equal(record.status,'cancelada');
 });
 check('Legacy emergency attribute and room approval flow cannot issue an external reservation', () => {
-  const a=setup('2026-09-10T12:00:00-03:00'); a.context.SIPAE.state.role='diretor';
+  const a=setup('2026-09-10T12:00:00-03:00'); a.context.MAPPA.state.role='diretor';
   const target=a.data.rooms.find(r=>r.status==='ativo'&&!r.externalBlocked);
   const before=a.data.externalReservations.length;
   a.submitForm('external',{'external-name':'Organização de teste','external-contact':'teste@example.org','external-room':target.id,'external-date':'2026-10-05','external-start':'08:00','external-end':'09:00','external-attendees':'10','external-purpose':'Atividade demonstrativa','external-priority':'normal'},{emergency:'true'});
@@ -201,7 +201,7 @@ check('Legacy emergency attribute and room approval flow cannot issue an externa
   assert.doesNotMatch(pages,/external-approve|external-reject|external-new/);
 });
 check('Coordinator updates a teacher from the whole unit without department fields', () => {
-  const a=setup('2026-09-10T12:00:00-03:00'); a.context.SIPAE.state.role='coordenador';
+  const a=setup('2026-09-10T12:00:00-03:00'); a.context.MAPPA.state.role='coordenador';
   const t=a.data.teachers.find(t=>t.id==='t7');
   assert.equal(a.submitForm('teacher',{'teacher-name':t.name+' Teste','teacher-nif':t.nif,'teacher-email':t.email,'teacher-hours':String(t.contractHours),'teacher-subjects':t.disciplines.join(', '),'teacher-room':t.defaultRoomId,'teacher-status':'ativo'},{editId:t.id}),'');
   assert.match(t.name,/Teste$/);assert.equal(t.areaId,'unidade');

@@ -6,7 +6,7 @@
 - Filtro de sala validado nos três perfis, nas visões de dia, semana e mês, na lista lateral e nos detalhes. O Docente continua vendo somente suas reservas; filtros de bloco e docente se combinam ao de sala.
 - A contagem do turno corresponde aos registros do modal. No navegador, **Ver 4 agendamentos** abriu **Manhã · 4 agendamentos**, com quatro reservas. A lista lateral de hoje informou 11 e apresentou os mesmos 11 registros.
 - O resumo do período separa aulas acadêmicas e reservas externas. Reservas canceladas e solicitações externas pendentes não entram nos totais do calendário.
-- As cores dos cursos permanecem iguais entre turmas, perfis e datas: Desenvolvimento de Sistemas verde e Eletroeletrônica azul. A legenda pode ser expandida abaixo da grade.
+- As cores dos cursos permanecem iguais entre turmas, perfis e datas: Engenharia de Software verde e Engenharia Elétrica azul. A legenda pode ser expandida abaixo da grade.
 - Painel conferido no computador e em 390 × 844 px: gráfico com 280 px, rankings logo abaixo e disponibilidade acima dos blocos. Sem transbordamento horizontal da página. Filtro de sala e estado vazio conferidos no celular; sem erros ou avisos no console nos percursos executados.
 
 Para repetir: `node --test tests/*.test.cjs`.
@@ -16,7 +16,7 @@ Para repetir: `node --test tests/*.test.cjs`.
 - **115 cenários passaram**, sem falhas: reservas 37, planejamento 17, dados da unidade 6, relatórios da unidade 13, motor externo por período 35 e integração externa 7. Os 14 arquivos JavaScript da raiz passaram em `node --check`.
 - O motor externo foi validado para datas reais e futuras, intervalos de 15 minutos em um turno, limite de 366 dias, público, capacidade, manutenção, bloqueio externo, funcionamento de todos os dias, conflitos e solicitações pendentes. Busca não altera a base; confirmação revalida os dados e não grava parte do período quando há impedimento. IDs permanecem únicos, mesmo em confirmações no mesmo instante.
 - Os testes verificam que somente a Direção confirma/cancela reservas externas, que a Coordenação apenas consulta, e que o cancelamento em grupo preserva dias passados, iniciados e solicitações pendentes. As regressões de reserva interna direta e créditos do Docente continuaram passando.
-- No navegador, o botão **Agendar reserva externa** no dashboard do Malta abriu as quatro etapas. Para 05 a 07/10/2026, 13h–17h e 30 participantes, a busca ofereceu oito salas. O Auditório foi escolhido e o resumo mostrou **3 dias, 4 h por dia e 12 h no total**. Avançar para a revisão também foi conferido com Enter.
+- No navegador, o botão **Agendar reserva externa** no dashboard do Ricardo Moreira abriu as quatro etapas. Para 05 a 07/10/2026, 13h–17h e 30 participantes, a busca ofereceu oito salas. O Auditório foi escolhido e o resumo mostrou **3 dias, 4 h por dia e 12 h no total**. Avançar para a revisão também foi conferido com Enter.
 - A confirmação criou três registros **Confirmada** na listagem e três eventos no calendário de outubro. Cancelar somente 05/10 manteve os outros dois eventos; cancelar os dias futuros removeu os eventos de 06 e 07/10. Nova busca ofereceu novamente o Auditório para todo o período.
 - Em **390 × 844 px**, o formulário e os cards ficaram em uma coluna, com controles legíveis e rolagem dentro do modal. A busca para 10 e 11/10/2026, sábado e domingo, mostrou nenhum ambiente disponível e explicou que nenhum dia havia sido reservado, sem pular datas.
 - Os percursos executados não registraram erros ou avisos no console do navegador. Os dados usados nos testes de interação são fictícios e pertencem somente à sessão local.
@@ -80,7 +80,7 @@ Os dados continuam sendo uma demonstração local. Estas verificações não val
 
 As verificações anteriores de lógica e perfis estão registradas abaixo.
 
-Verificação realizada em 10/09/2026, no projeto extraído de `SIPAE-html-css-js.zip`.
+Verificação realizada em 10/09/2026, no projeto extraído de `MAPPA-html-css-js.zip`.
 
 ## Testes de lógica
 

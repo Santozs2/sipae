@@ -1,30 +1,38 @@
 /* Camada visual compartilhada. Fluxos e dados permanecem nos módulos existentes. */
 :root {
-  --brand: #bd1834;
-  --brand-hover: #9f122b;
-  --brand-soft: #fff0f3;
+  /* Paleta da marca: troque estes tokens para mudar a identidade inteira. */
+  /* Paleta Petróleo */
+  --brand: #0f766e;
+  --brand-hover: #115e59;
+  --brand-strong: #0d5c56;
+  --brand-soft: #e8f5f2;
+  --brand-tint: #c9e8e2;
+  --brand-light: #5eead4;
+  --brand-deep: #1c3236;
   --ink: #172032;
   --muted: #657086;
   --subtle: #778195;
   --bg: #f3f5f9;
   --line: #e4e8ef;
-  --sidebar: #161a25;
+  --sidebar: #0f1a1e;
   --blue: #375e9b;
   --green: #226d53;
   --amber: #925b1b;
   --radius: 18px;
   --shadow: 0 4px 24px -12px #21325424, 0 1px 2px #21325404;
   --sidebar-width: 248px;
+  --font: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
 }
 html {
-  font-family: "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+  font-family: var(--font);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 body { background: var(--bg); }
-::selection { background: #f6dce2; color: #7c152a; }
-h1, h2, h3, .kpi-value { font-family: "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif; }
-h1 { font-size: clamp(1.75rem, 2.7vw, 2.35rem); font-weight: 730; letter-spacing: -1.1px; line-height: 1.18; }
+::selection { background: var(--brand-tint); color: var(--brand-strong); }
+h1, h2, h3, .kpi-value { font-family: var(--font); }
+.kpi-value, table td, .time-cell, .donut-list, .chart-value { font-variant-numeric: tabular-nums; }
+h1 { font-size: clamp(1.75rem, 2.7vw, 2.35rem); font-weight: 730; letter-spacing: -1.2px; line-height: 1.16; }
 h2 { font-size: 1.05rem; font-weight: 680; letter-spacing: -.3px; }
 .icon { stroke-width: 1.65; }
 .sidebar {
@@ -37,7 +45,7 @@ h2 { font-size: 1.05rem; font-weight: 680; letter-spacing: -.3px; }
 .brand { margin: 0 12px 46px; gap: 13px; font-size: 1.55rem; letter-spacing: 1.6px; }
 .brand-mark {
   width: 41px; height: 43px; border-radius: 12px;
-  background: #c71f3c; box-shadow: 0 6px 20px #00000025, inset 0 1px #ffffff20;
+  background: var(--brand); box-shadow: 0 6px 20px #00000025, inset 0 1px #ffffff20;
 }
 .brand small { color: #a2aabe; font-size: .57rem; letter-spacing: 1.8px; }
 .nav-caption { color: #8994aa; margin: 0 14px 14px; font-size: .62rem; font-weight: 650; letter-spacing: 1.8px; }
@@ -46,20 +54,20 @@ h2 { font-size: 1.05rem; font-weight: 680; letter-spacing: -.3px; }
   min-height: 46px; padding: 12px 14px; border-radius: 11px;
   color: #b9c0ce; font-size: .84rem; border: 1px solid transparent;
 }
-.sidebar nav a:hover { color: #fff; background: #232938; }
-.sidebar nav a.active { background: #30303c; color: #fff; border-color: #45404d; font-weight: 600; }
-.sidebar nav a.active::before { left: -19px; width: 3px; height: 25px; background: #f16880; }
-.sidebar nav a.active .icon { color: #ff8aa0; }
+.sidebar nav a:hover { color: #fff; background: #1a2a2f; }
+.sidebar nav a.active { background: #1c3236; color: #fff; border-color: #2a4a4f; font-weight: 600; }
+.sidebar nav a.active::before { left: -19px; width: 3px; height: 25px; background: var(--brand-light); }
+.sidebar nav a.active .icon { color: var(--brand-light); }
 .sidebar-close, .sidebar-backdrop { display: none; }
 .profile {
-  margin-top: auto; padding: 20px 3px 0; gap: 9px; border-top: 1px solid #34394a;
+  margin-top: auto; padding: 20px 3px 0; gap: 9px; border-top: 1px solid #24363b;
 }
 .profile > div { flex: 1; min-width: 0; }
 .profile strong { max-width: 113px; font-size: .78rem; font-weight: 600; }
 .profile span { font-size: .67rem; color: #a0aabd; line-height: 1.5; }
-.profile .avatar { width: 35px; height: 35px; background: #383042; color: #ffb0bf; border: 1px solid #594050; }
+.profile .avatar { width: 35px; height: 35px; background: var(--brand-deep); color: var(--brand-light); border: 1px solid var(--brand-deep); }
 #profile-logout { flex-shrink: 0; padding: 8px 5px; font-size: .72rem; border-radius: 7px; color: #c2cad9; }
-#profile-logout:hover, #profile-logout:focus-visible { background: #303646; color: #fff; }
+#profile-logout:hover, #profile-logout:focus-visible { background: #1c3236; color: #fff; }
 .workspace { margin-left: var(--sidebar-width); }
 .topbar {
   height: 76px; padding: 0 36px; border-color: #e3e7ef;
@@ -77,11 +85,11 @@ h2 { font-size: 1.05rem; font-weight: 680; letter-spacing: -.3px; }
 .topbar .icon-button { border: 1px solid #e5e9f0; background: white; width: 38px; height: 38px; border-radius: 10px; }
 .notification-button { display: inline-flex; }
 .notification-button i { top: 5px; right: 6px; width: 7px; height: 7px; }
-.senai { font-size: 1.06rem; padding-left: 18px; }
+.unit-logo { font-size: 1.06rem; padding-left: 18px; }
 main { padding: 34px 36px; max-width: 1720px; }
 .page-heading { align-items: center; gap: 24px; margin-bottom: 29px; }
 .page-heading > div:first-child { min-width: 0; }
-.eyebrow { color: #7a4d5d; font-weight: 700; letter-spacing: 1.7px; font-size: .61rem; margin-bottom: 11px; }
+.eyebrow { color: var(--brand-strong); font-weight: 700; letter-spacing: 1.7px; font-size: .61rem; margin-bottom: 11px; }
 .page-heading p { color: #657086; font-size: .87rem; margin-top: 11px; max-width: 640px; }
 .heading-actions { padding-top: 0; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 body[data-page="dashboard"] .page-heading {
@@ -95,14 +103,14 @@ body[data-page="dashboard"] .page-heading h1 { font-size: clamp(1.7rem, 2.1vw, 2
   font-weight: 650; letter-spacing: -.1px;
   transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
-.button.primary { box-shadow: 0 4px 10px #bd183421, inset 0 1px #ffffff16; }
-.button.primary:hover { box-shadow: 0 5px 15px #bd183435; transform: translateY(-1px); }
+.button.primary { box-shadow: 0 4px 10px color-mix(in srgb, var(--brand) 13%, transparent), inset 0 1px #ffffff16; }
+.button.primary:hover { box-shadow: 0 5px 15px color-mix(in srgb, var(--brand) 21%, transparent); transform: translateY(-1px); }
 .button.secondary { border-color: #dde3ed; color: #46516a; background: #fff; box-shadow: 0 1px 2px #17203205; }
 .button.secondary:hover { background: #f6f8fc; border-color: #bac7da; }
 .button.compact { min-height: 33px; padding: 7px 10px; border-radius: 8px; font-size: .7rem; }
-.text-button { color: #a81e38; font-size: .76rem; border-radius: 6px; }
+.text-button { color: var(--brand-strong); font-size: .76rem; border-radius: 6px; }
 .date-pill { background: #f7f8fb; border-color: #e5e9f1; border-radius: 10px; color: #56637b; min-height: 41px; }
-.date-pill .icon { color: #b62341; }
+.date-pill .icon { color: var(--brand); }
 .card, .calendar-panel, .room-tile { border-color: #e4e8ef; box-shadow: var(--shadow); border-radius: var(--radius); }
 .card-head { padding: 23px 24px 19px; }
 .card-head h2 { font-size: 1rem; color: #212b3e; }
@@ -114,9 +122,9 @@ body[data-page="dashboard"] .page-heading h1 { font-size: clamp(1.7rem, 2.1vw, 2
 .kpi-grid { gap: 16px; margin-bottom: 24px; }
 .kpi { padding: 20px 21px; border-radius: 16px; min-height: 158px; border-color: #e4e8ef; }
 .kpi-label { font-size: .79rem; font-weight: 600; color: #59647a; }
-.kpi-icon { width: 36px; height: 36px; border-radius: 11px; color: #ba2843; background: #fcebf0; }
+.kpi-icon { width: 36px; height: 36px; border-radius: 11px; color: var(--brand); background: var(--brand-soft); }
 .kpi:nth-child(2) .kpi-icon { color: #355d9e; background: #eaf0fb; }
-.kpi:nth-child(3) .kpi-icon { color: #2b795c; background: #e9f4ef; }
+.kpi:nth-child(3) .kpi-icon { color: #5b4bb0; background: #efecfa; }
 .kpi:nth-child(4) .kpi-icon { color: #856023; background: #faf2e2; }
 .kpi-value { font-size: 2.2rem; font-weight: 720; margin: 15px 0 10px; letter-spacing: -1.3px; }
 .kpi-bottom { font-size: .7rem; line-height: 1.55; color: #69758a; }
@@ -174,7 +182,7 @@ body[data-page="dashboard"] .page-heading h1 { font-size: clamp(1.7rem, 2.1vw, 2
 .mini-month button { height: 40px; border-radius: 10px; color: #42506a; }
 .mini-month button:hover { background: #f0f3fa; }
 .mini-month button.has-booking { background: #f3f6fc; font-weight: 650; }
-.mini-month button.today { background: var(--brand); color: white; box-shadow: 0 4px 10px #bd183420; }
+.mini-month button.today { background: var(--brand); color: white; box-shadow: 0 4px 10px color-mix(in srgb, var(--brand) 13%, transparent); }
 .credit-month { padding: 10px 12px; background: #f7f9fc; border-radius: 10px; font-size: .72rem; justify-content: space-between; }
 .credit-month input { background: #fff; color: #45536d; border-radius: 8px; }
 .discipline-credit { padding: 18px 0; }
@@ -199,9 +207,9 @@ body[data-page="dashboard"] .page-heading h1 { font-size: clamp(1.7rem, 2.1vw, 2
 .form-error { background: #fff1f3; border: 1px solid #f2d0d9; color: #9c1731; border-radius: 9px; padding: 11px 13px; }
 .profile-grid { grid-template-columns: minmax(235px, .7fr) minmax(0, 1.6fr); }
 .profile-grid > .card:first-child { position: relative; background: #fff; }
-.profile-grid > .card:first-child::before { content: ""; height: 86px; position: absolute; inset: 0 0 auto; background: #f3e9ed; border-bottom: 1px solid #eadde4; }
+.profile-grid > .card:first-child::before { content: ""; height: 86px; position: absolute; inset: 0 0 auto; background: var(--brand-soft); border-bottom: 1px solid var(--brand-tint); }
 .profile-grid > .card:first-child .card-body { position: relative; padding-top: 16px; }
-.profile-picture { height: 84px; width: 84px; border: 5px solid #fff; box-shadow: 0 4px 14px #48253614; background: #5d3445; color: #fff; font-size: 1.6rem; }
+.profile-picture { height: 84px; width: 84px; border: 5px solid #fff; box-shadow: 0 4px 14px #48253614; background: var(--brand-strong); color: #fff; font-size: 1.6rem; }
 .profile-summary h2 { font-size: 1.3rem; font-weight: 700; }
 .profile-summary p { color: #69758a; font-size: .76rem; }
 .profile-details { padding-top: 22px; gap: 19px; }
@@ -218,7 +226,7 @@ td small { color: #6c7b92; font-size: .7rem; }
 tbody tr:hover { background: #fafbfe; }
 .pagination { border-color: #e9edf4; color: #6b7890; }
 .room-tile { padding: 22px; background: #fff; border-top: 3px solid #ccd8eb; transition: box-shadow .18s, border-color .18s; }
-.room-tile:hover { box-shadow: 0 8px 26px #21325412; border-top-color: #a84a63; }
+.room-tile:hover { box-shadow: 0 8px 26px #21325412; border-top-color: var(--brand-strong); }
 .room-tile h2 { font-size: .99rem; color: #263751; }
 .room-tile p, .room-tile-foot > span { color: #63738d; }
 .tag { background: #f6f8fc; color: #596c87; border-color: #e3e9f2; border-radius: 6px; font-size: .68rem; }

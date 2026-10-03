@@ -1,8 +1,8 @@
 @charset "UTF-8";
 :root {
-  --brand: #cc243b;
-  --brand-hover: #af1d32;
-  --brand-soft: #fff1f3;
+  --brand: #0f766e;
+  --brand-hover: #115e59;
+  --brand-soft: #e8f5f2;
   --ink: #18202e;
   --muted: #77808e;
   --subtle: #9aa2ad;
@@ -24,7 +24,7 @@
   box-sizing: border-box;
 }
 html {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
   color: var(--ink);
   font-size: 16px;
   scroll-behavior: smooth;
@@ -163,7 +163,7 @@ small {
   font-size: 1.55rem;
   display: grid;
   place-items: center;
-  font-style: italic;
+  font-weight: 800;
 }
 .brand small {
   display: block;
@@ -213,7 +213,7 @@ nav a.active::before {
   border-radius: 0 4px 4px 0;
 }
 nav a.active .icon {
-  color: #ef5166;
+  color: var(--brand-light);
 }
 .sidebar-note {
   margin: auto 12px 40px;
@@ -251,8 +251,8 @@ nav a.active .icon {
   height: 36px;
   width: 36px;
   border-radius: 50%;
-  background: #29252b;
-  color: #e38895;
+  background: var(--brand-deep);
+  color: var(--brand-light);
   display: grid;
   place-items: center;
   font-weight: 600;
@@ -326,12 +326,11 @@ nav a.active .icon {
   background: #fff;
   color: #545d6a;
 }
-.senai {
+.unit-logo {
   font-size: 1.1rem;
   color: var(--brand);
   font-weight: 800;
-  font-style: italic;
-  letter-spacing: -1px;
+  letter-spacing: 1px;
   border-left: 1px solid var(--line);
   padding-left: 24px;
 }
@@ -1794,7 +1793,7 @@ dialog textarea {
   .topbar {
     height: 66px;
   }
-  .senai {
+  .unit-logo {
     display: none;
   }
   .kpi-grid {

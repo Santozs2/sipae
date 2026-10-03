@@ -1,12 +1,12 @@
-# SIPAE — protótipo em HTML, CSS e JavaScript
+# Mappa — protótipo em HTML, CSS e JavaScript
 
-O SIPAE demonstra o planejamento e o agendamento de espaços escolares nos perfis Docente, Coordenador e Diretor. Há uma única coordenação para toda a unidade; os blocos identificam a localização física dos ambientes. O pacote funciona no navegador, sem instalação de dependências.
+O Mappa demonstra o planejamento e o agendamento de espaços escolares nos perfis Docente, Coordenador e Diretor. Há uma única coordenação para toda a unidade; os blocos identificam a localização física dos ambientes. O pacote funciona no navegador, sem instalação de dependências.
 
 ## Como abrir
 
 1. Extraia o pacote inteiro, mantendo os arquivos na mesma pasta.
 2. Abra `index.html` no Chrome ou Edge.
-3. Use o NIF **123456789**, a senha **sipae2026** e escolha o perfil de demonstração. O seletor no cabeçalho também permite trocar de perfil.
+3. Use a matrícula **123456789**, a senha **mappa2026** e escolha o perfil de demonstração. O seletor no cabeçalho também permite trocar de perfil.
 
 Se preferir servir os arquivos localmente e já tiver Python instalado, abra um terminal na pasta do projeto e execute:
 
@@ -18,7 +18,7 @@ Acesse `http://localhost:8000`. Esse servidor é opcional e apenas entrega os ar
 
 ## O que mudou
 
-- **Reserva externa no dashboard do Malta:** o botão **Agendar reserva externa** abre um modal com quatro etapas: período, ambiente, evento e confirmação. Escolha data inicial e final, horário repetido em cada dia e participantes. A busca apresenta todas as salas compatíveis com o período inteiro, com imagem, capacidade e recursos. O resumo permite revisar os dias e o total de horas antes da confirmação direta.
+- **Reserva externa no dashboard do Ricardo Moreira:** o botão **Agendar reserva externa** abre um modal com quatro etapas: período, ambiente, evento e confirmação. Escolha data inicial e final, horário repetido em cada dia e participantes. A busca apresenta todas as salas compatíveis com o período inteiro, com imagem, capacidade e recursos. O resumo permite revisar os dias e o total de horas antes da confirmação direta.
 - **Reserva externa por vários dias:** de 1 a 366 dias consecutivos, com os mesmos horários. Todos os dias devem respeitar funcionamento, capacidade, manutenção, bloqueio para uso externo e disponibilidade, incluindo solicitações externas pendentes. A confirmação revalida tudo e cria um grupo com um registro por dia; nenhum dia é salvo se houver impedimento. A lista explica por que os demais ambientes ficaram indisponíveis.
 - **Consulta e cancelamento externo:** a listagem mostra as reservas diretas como Confirmada e oferece filtro correspondente. Os detalhes apresentam contato, participantes, período e cada dia do grupo. O Diretor pode cancelar somente um dia ou os dias futuros, revisando antes a lista que será cancelada; dias já iniciados são preservados. A Coordenação pode consultar os eventos externos no calendário.
 - **Encontrar sala:** nova página nos três perfis, com data, turma, disciplina, duração e equipamentos. **Equipamentos necessários** é um campo expansível com checkboxes: o cabeçalho mostra quantos estão selecionados, a lista continua aberta entre as marcações, fecha com clique fora ou Esc e possui **Limpar seleção**. A busca oferece horários em intervalos de 15 minutos dentro do turno da turma e verifica capacidade, funcionamento, manutenção, sobreposição e saldo da disciplina. Ao escolher um horário, o formulário abre preenchido para revisão e confirmação direta. Há um atalho no modal de Nova reserva.
@@ -37,7 +37,7 @@ Acesse `http://localhost:8000`. Esse servidor é opcional e apenas entrega os ar
 - **Horas por disciplina:** agendar compromete o saldo do mês da aula, e cancelar libera as horas. As cotas não aumentam com essas operações. As horas realizadas são calculadas pelo horário de término das aulas, sem comprovação de presença.
 - **Navegação do Docente:** o avatar abre o perfil, e **Sair** fica ao lado do nome do professor, dentro da faixa de perfil.
 - **Navegação da Coordenação e da Direção:** o avatar abre o perfil correspondente, e **Sair** fica ao lado do nome, na mesma posição do Docente. A barra lateral não exibe mais o bloco institucional com os textos sobre a unidade.
-- **Perfis e cadastros:** cada perfil apresenta nome, e-mail, telefone e NIF, com formulário para atualizar nome e contatos durante a sessão. A função dos gestores é somente leitura. Os campos de área e departamento foram removidos dos perfis e dos cadastros.
+- **Perfis e cadastros:** cada perfil apresenta nome, e-mail, telefone e matrícula, com formulário para atualizar nome e contatos durante a sessão. A função dos gestores é somente leitura. Os campos de área e departamento foram removidos dos perfis e dos cadastros.
 - **Notificações:** verde para confirmação, azul para informações e próximos horários, laranja para cancelamento. Os avisos continuam legíveis depois de marcados como lidos.
 - **Painel do Coordenador:** mostra a data local do acesso, aulas e docentes do dia, ocupação e horas de aula, próximos agendamentos da unidade, agenda e ambientes disponíveis hoje. O conteúdo de aprovações e alertas de conflitos internos foi substituído por esses temas.
 - **Gestão da unidade:** Coordenação e Direção consultam todas as salas, docentes e agendamentos da unidade. Os calendários dos gestores possuem filtros por bloco e docente, sem divisão por áreas. A busca e o formulário oferecem todas as salas e turmas, mantendo as regras de uso e disponibilidade.
@@ -88,4 +88,4 @@ Para as reservas externas por período e sua integração com detalhes/cancelame
 
 ## Hospedar na Vercel
 
-Siga [Como hospedar o SIPAE na Vercel](HOSPEDAR-NA-VERCEL.md). O guia apresenta envio do ZIP pelo Vercel Drop, importação por GitHub e CLI, com a pasta correta e as configurações para HTML/CSS/JS. A hospedagem mantém os limites da demonstração em memória descritos acima.
+Siga [Como hospedar o Mappa na Vercel](HOSPEDAR-NA-VERCEL.md). O guia apresenta envio do ZIP pelo Vercel Drop, importação por GitHub e CLI, com a pasta correta e as configurações para HTML/CSS/JS. A hospedagem mantém os limites da demonstração em memória descritos acima.

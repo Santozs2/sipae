@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const S = SIPAE,
+  const S = MAPPA,
     { data, M, state, U } = S,
     {
       icon,
@@ -28,7 +28,7 @@
   const addDays = (value, count) => {
     const day = new Date(value + "T12:00Z");
     day.setUTCDate(day.getUTCDate() + count);
-    return SIPAE_DATA.dateString(day);
+    return MAPPA_DATA.dateString(day);
   };
   const monthLabel = (value = today) =>
     new Intl.DateTimeFormat("pt-BR", {
@@ -230,24 +230,23 @@
   function login() {
     let remembered = "docente";
     try {
-      remembered = localStorage.getItem("sipae-demo-role") || "docente";
+      remembered = localStorage.getItem("mappa-demo-role") || "docente";
     } catch {}
     return (
       `<div class="login-layout">
-        <aside class="login-story" aria-label="Sobre o SIPAE">
-          <div class="login-story-brand"><span class="login-logo">SENAI</span><span class="login-story-brand-name">SIPAE<small>GESTÃO DE ESPAÇOS</small></span></div>
-          <div class="login-story-copy"><span class="login-eyebrow">O ENSINO COMEÇA COM UM BOM PLANEJAMENTO</span><h2>Mais espaço <br>para <em>ensinar.</em></h2><p>Planeje aulas, encontre ambientes e acompanhe seus agendamentos em um só lugar.</p></div>
+        <aside class="login-story" aria-label="Sobre o Mappa">
+          <div class="login-story-brand"><span class="login-logo"><svg class="logo-glyph" viewBox="348 361 557 496" aria-hidden="true" focusable="false" fill="currentColor"><path d="M348 405 428 361 614 489V583L428 457V857H348Z"/><path d="M905 405 826 361 639 489V583L826 457V857H905Z"/><path d="M458 573H555L611 611V722H487V661H458Z"/><path d="M795 573H698L642 611V722H766V661H795Z"/><path d="M453 750H611V857H453Z"/><path d="M642 750H801V857H642Z"/></svg></span><span class="login-story-brand-name">MAPPA<small>GESTÃO DE ESPAÇOS</small></span></div>
+          <div class="login-story-copy"><h2>Salas, laboratórios e horários da unidade.</h2><p>Reserve um espaço, veja a agenda da semana e acompanhe a ocupação.</p></div>
           <div class="login-illustration" aria-hidden="true">
             <div class="login-visual-orbit"></div>
             <div class="login-agenda"><div class="login-agenda-top"><span><i></i> Sua agenda</span><b>•••</b></div><div class="login-agenda-head"><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span></div><div class="login-agenda-grid"><span class="login-agenda-event event-one"><b>Aula prática</b><i>Laboratório</i></span><span class="login-agenda-event event-two"><b>Projeto</b><i>Sala de aula</i></span><span class="login-agenda-event event-three"><b>Oficina</b><i>Laboratório</i></span><span class="login-agenda-event event-four"><b>Aula teórica</b><i>Sala de aula</i></span></div></div>
-            <div class="login-space-note"><span class="login-space-icon">` + icon("calendar") + `</span><span><strong>Tudo no seu lugar.</strong><small>Uma agenda. Muitas possibilidades.</small></span></div>
-          </div>
-          <div class="login-story-footer"><span>SENAI São José do Rio Preto</span><span class="login-story-line"></span></div>
+                      </div>
+          <div class="login-story-footer"><span>Unidade de demonstração</span><span class="login-story-line"></span></div>
         </aside>
-        <section class="login-box" aria-labelledby="login-title"><div class="login-brand"><span class="login-form-kicker">BEM-VINDO DE VOLTA</span><h1 id="login-title">Entre no SIPAE<span>.</span></h1><p>Seu próximo planejamento começa aqui.</p></div><form id="login-form" data-form="login">` +
+        <section class="login-box" aria-labelledby="login-title"><div class="login-brand"><h1 id="login-title">Entrar</h1><p>Use sua matrícula e senha institucional.</p></div><form id="login-form" data-form="login">` +
       field(
         "login-nif",
-        "Digite seu NIF",
+        "Matrícula",
         input(
           "login-nif",
           "123456789",
@@ -261,7 +260,7 @@
         '<div class="password-wrap">' +
           input(
             "login-password",
-            "sipae2026",
+            "mappa2026",
             "password",
             'required autocomplete="current-password"',
           ) +
@@ -282,7 +281,7 @@
       ) +
       '<div class="login-tools"><label class="check-label"><input type="checkbox" name="remember"> Lembrar perfil</label><button type="button" class="text-button" data-action="forgot-password">Esqueceu a senha?</button></div>' +
       errorBox() +
-      '<button class="button primary" type="submit">Entrar no SIPAE<span aria-hidden="true">↗</span></button></form><div class="login-demo"><span class="login-demo-mark" aria-hidden="true">i</span><div><strong>Explore a versão de demonstração</strong><p>NIF: 123456789 · senha: sipae2026<br>Escolha o perfil para conhecer o protótipo.</p></div></div><p class="login-form-footer">Sistema Integrado de Planejamento<br>e Agendamento de Espaços</p></section></div>'
+      '<button class="button primary" type="submit">Entrar</button></form><div class="login-demo"><span class="login-demo-mark" aria-hidden="true">i</span><div><strong>Explore a versão de demonstração</strong><p>Matrícula: 123456789 · senha: mappa2026<br>Escolha o perfil para conhecer o protótipo.</p></div></div><p class="login-form-footer">Sistema de Alocação<br>e Agendamento de Espaços</p></section></div>'
     );
   }
   function miniCalendar(anchor = today) {
@@ -337,9 +336,9 @@
     const credits = M.disciplineCredits(data, teacherId, creditMonth);
     return (
       heading(
-        "DOCENTE · TECNOLOGIA DA INFORMAÇÃO",
+        "",
         (new Date(data.reference).getHours() < 12 ? "Bom dia" : new Date(data.reference).getHours() < 18 ? "Boa tarde" : "Boa noite") + ", " + esc(current.name.split(" ")[0]),
-        "Suas aulas, reservas e ambientes em um só lugar.",
+        "Suas próximas aulas e reservas.",
         link(icon("calendar") + "Ver calendário", "calendario", "secondary") +
           link("Minhas reservas", "reservas", "secondary") +
           button("+ Nova reserva", "booking-new"),
@@ -347,7 +346,7 @@
       '<div class="teacher-dashboard-grid">' +
       card(
         "Próximas aulas",
-        "Agendamentos a partir de " + date(today) + " · dados de demonstração",
+        "A partir de " + date(today),
         upcoming.length
           ? '<div class="upcoming-lessons">' +
               upcoming
@@ -414,7 +413,7 @@
       ) +
       card(
         "Horas por disciplina",
-        "Créditos mensais · realizadas / carga do mês",
+        "Horas usadas no mês",
         '<label class="credit-month" for="credit-month">Mês de referência' +
           input(
             "credit-month",
@@ -480,7 +479,7 @@
     return (
       heading(
         "DOCENTE",
-        "Minhas Reservas",
+        "Minhas reservas",
         "Consulte, acompanhe ou cancele seus agendamentos.",
         button("+ Nova reserva", "booking-new"),
       ) +
@@ -745,7 +744,7 @@
     return (
       heading(
         "DOCENTE",
-        "Perfil do Docente",
+        "Meu perfil",
         "Seus dados de cadastro e histórico de reservas.",
       ) +
       '<div class="profile-grid">' +
@@ -760,13 +759,13 @@
           esc(t.email) +
           "</strong></div><div><span>TELEFONE</span><strong>" +
           esc(t.phone) +
-          "</strong></div><div><span>MATRÍCULA · NIF</span><strong>" +
+          "</strong></div><div><span>MATRÍCULA</span><strong>" +
           esc(t.nif) +
           "</strong></div></div></div>",
       ) +
       card(
         "Informações de cadastro",
-        "Atualize seus contatos e preferências.",
+        "",
         '<form data-form="profile"><div class="form-grid">' +
           field(
             "profile-fullname",
@@ -847,8 +846,8 @@
     return (
       heading(
         isDirector ? "DIREÇÃO" : "COORDENAÇÃO",
-        isDirector ? "Perfil do Diretor" : "Perfil do Coordenador",
-        "Atualize seus dados de contato e consulte suas informações de cadastro.",
+        "Meu perfil",
+        "Dados de contato e cadastro.",
       ) +
       '<div class="profile-grid">' +
       card(
@@ -864,13 +863,13 @@
           esc(account.email) +
           "</strong></div><div><span>TELEFONE</span><strong>" +
           esc(account.phone) +
-          "</strong></div><div><span>MATRÍCULA · NIF</span><strong>" +
+          "</strong></div><div><span>MATRÍCULA</span><strong>" +
           esc(account.nif) +
           "</strong></div></div></div>",
       ) +
       card(
         "Informações de cadastro",
-        "Atualize seus dados de contato.",
+        "",
         '<form data-form="management-profile"><div class="form-grid">' +
           field(
             "profile-fullname",
@@ -930,8 +929,8 @@
         state.role === "diretor"
           ? "DIREÇÃO · INFRAESTRUTURA"
           : "COORDENAÇÃO",
-        "Gerenciamento de Salas",
-        "Consulte ambientes, recursos e a agenda de cada espaço.",
+        "Salas",
+        "Ambientes, recursos e agenda de cada espaço.",
         button(
           "+ " + (state.role === "diretor" ? "Adicionar sala" : "Nova sala"),
           "room-new",
@@ -1033,7 +1032,7 @@
      dos turnos da unidade e das janelas entre turnos (almoço e intervalo). */
   const LUNCH = { start: 12, end: 13 },
     BREAK = { start: 17, end: 18 };
-  function teacherSchedule(id, day = SIPAE_DATA.localDate()) {
+  function teacherSchedule(id, day = MAPPA_DATA.localDate()) {
     return data.allocations
       .filter((a) => a.teacherId === id && a.status === "confirmada" && a.date === day)
       .sort((a, b) => a.start - b.start);
@@ -1041,7 +1040,7 @@
   function teacherSituation(t, now = new Date()) {
     if (t.status !== "ativo")
       return { label: "Inativo", tone: "gray", detail: "Cadastro inativo" };
-    const day = SIPAE_DATA.localDate(now),
+    const day = MAPPA_DATA.localDate(now),
       hour = now.getHours() + now.getMinutes() / 60,
       lessons = teacherSchedule(t.id, day);
     const current = lessons.find((a) => hour >= a.start && hour < a.end);
@@ -1093,8 +1092,8 @@
     return (
       heading(
         state.role === "diretor" ? "DIREÇÃO · EQUIPE" : "COORDENAÇÃO",
-        "Gerenciamento de Docentes",
-        "Consulte a equipe, as especialidades e os agendamentos.",
+        "Docentes",
+        "Equipe, especialidades e agendamentos.",
         button("+ Cadastrar docente", "teacher-new"),
       ) +
       '<div class="page-toolbar">' +
@@ -1108,7 +1107,7 @@
       card(
         "Docentes cadastrados",
         rows.length + " docentes no recorte",
-        '<div class="table-wrap"><table><thead><tr><th>NOME / NIF</th><th>DISCIPLINAS</th><th>CARGA HORÁRIA</th><th>AULAS HOJE</th><th>STATUS</th><th>AÇÕES</th></tr></thead><tbody>' +
+        '<div class="table-wrap"><table><thead><tr><th>NOME / MATRÍCULA</th><th>DISCIPLINAS</th><th>CARGA HORÁRIA</th><th>AULAS HOJE</th><th>STATUS</th><th>AÇÕES</th></tr></thead><tbody>' +
           rows
             .map((t) => {
               const todayA = M.allocations(data, {
@@ -1188,21 +1187,21 @@
   }
   // A cor pertence ao curso, independentemente da turma, do perfil e da data.
   const courseHues = {
-    "Desenvolvimento de Sistemas": 145,
+    "Engenharia de Software": 145,
     "Redes de Computadores": 185,
     "Programação Web": 265,
-    "Python para Iniciantes": 45,
-    "Informática Aplicada": 315,
-    "Mecânica de Precisão": 25,
-    "Eletroeletrônica": 210,
-    "Soldagem": 0,
-    "Usinagem Convencional": 75,
-    "Automação Industrial": 240,
-    "Segurança em Eletricidade": 195,
+    "Ciência de Dados": 45,
+    "Computação Aplicada": 315,
+    "Engenharia Mecânica": 25,
+    "Engenharia Elétrica": 210,
+    "Fabricação Digital": 0,
+    "Física Experimental": 75,
+    "Robótica e Controle": 240,
+    "Segurança em Laboratórios": 195,
     "Administração": 290,
     "Logística": 165,
     "Empreendedorismo": 345,
-    "Assistente Administrativo": 95,
+    "Gestão de Projetos": 95,
   };
   function calendarEventStyle(a) {
     const name = a.external ? "Reserva externa" : cls(a.classId)?.name || a.title;
@@ -1251,10 +1250,10 @@
     if (f.view === "day") return { start: f.anchor, end: f.anchor };
     if (f.view === "month") {
       d.setUTCMonth(d.getUTCMonth() + 1, 0);
-      return { start: f.anchor.slice(0, 7) + "-01", end: SIPAE_DATA.dateString(d) };
+      return { start: f.anchor.slice(0, 7) + "-01", end: MAPPA_DATA.dateString(d) };
     }
     d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
-    const start = SIPAE_DATA.dateString(d);
+    const start = MAPPA_DATA.dateString(d);
     return { start, end: addDays(start, 4) };
   }
   function calendarSummary(rows) {
@@ -1286,7 +1285,7 @@
     for (let i = 0; i < days; i++) {
       const day = new Date(start);
       day.setUTCDate(day.getUTCDate() + i);
-      const ds = SIPAE_DATA.dateString(day),
+      const ds = MAPPA_DATA.dateString(day),
         items = events.filter((a) => a.date === ds);
       html +=
         '<div class="month-day ' +
@@ -1319,7 +1318,7 @@
     const days = Array.from({ length: 5 }, (_, i) => {
         const day = new Date(d);
         day.setUTCDate(day.getUTCDate() + i);
-        return SIPAE_DATA.dateString(day);
+        return MAPPA_DATA.dateString(day);
       }),
       events = calendarRows();
     let html =
@@ -1510,10 +1509,10 @@
             ? "DIREÇÃO · UNIDADE"
             : "COORDENAÇÃO",
         state.role === "docente"
-          ? "Calendário de Reservas"
+          ? "Calendário"
           : state.role === "diretor"
-            ? "Calendário Geral de Reservas"
-            : "Calendário Escolar",
+            ? "Calendário"
+            : "Calendário",
         "Selecione uma reserva para consultar os detalhes.",
         button("+ Nova reserva", "booking-new"),
       ) +
@@ -1629,9 +1628,9 @@
       );
     return (
       heading(
-        "DIREÇÃO · RELACIONAMENTO COM A COMUNIDADE",
-        "Gerenciamento de Reservas Externas",
-        "Agende atividades externas de instituições e acompanhe os registros da unidade.",
+        "",
+        "Reservas externas",
+        "Eventos de instituições parceiras nos espaços da unidade.",
         button("Agendar reserva externa", "external-direct"),
       ) +
       '<div class="page-toolbar">' +
@@ -1647,7 +1646,7 @@
       ]) +
       "</div>" +
       card(
-        "Reservas externas",
+        "Registros do período",
         list.length + " registros",
         '<div class="table-wrap"><table><thead><tr><th>ID</th><th>SOLICITANTE / ORGANIZAÇÃO</th><th>SALA</th><th>DATA / HORÁRIO</th><th>FINALIDADE</th><th>STATUS</th><th>AÇÕES</th></tr></thead><tbody>' +
           list

@@ -37,9 +37,9 @@
     const used = metric === "occupancy" ? M.unionHours(records, (r) => r.roomId + "|" + r.date) : M.sum(records, (r) => r.end - r.start);
     return { records, used, available, label, filter: f, block, metric, excluded: false };
   }
-  global.SIPAE_REPORT_DETAILS = { collect };
-  if (!global.SIPAE || typeof document === "undefined") return;
-  const S = global.SIPAE, { U, M, data, state } = S;
+  global.MAPPA_REPORT_DETAILS = { collect };
+  if (!global.MAPPA || typeof document === "undefined") return;
+  const S = global.MAPPA, { U, M, data, state } = S;
   function open(button) {
     if (!["relatorios", "dashboard"].includes(state.page)) return;
     // Nos relatórios vale o filtro da página. No painel, o recorte é a data atual,

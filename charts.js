@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const { U, M, data } = SIPAE,
+  const { U, M, data } = MAPPA,
     { esc, number, pct, empty } = U;
   function legend(series) {
     return (

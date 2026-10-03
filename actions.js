@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const S = SIPAE,
+  const S = MAPPA,
     { data, M, state, U, P } = S,
     {
       esc,
@@ -251,7 +251,7 @@
   function roomDetail(id) {
     const r = room(id);
     if (!r || !["docente", "coordenador", "diretor"].includes(state.role)) return;
-    const dates = SIPAE_DATA.dates(M.periods.semana.start, M.periods.semana.end);
+    const dates = MAPPA_DATA.dates(M.periods.semana.start, M.periods.semana.end);
     show(
       r.name,
       "Agenda e recursos do ambiente",
@@ -333,10 +333,10 @@
     ];
     show(
       id
-        ? "Editar Sala"
+        ? "Editar sala"
         : state.role === "diretor"
-          ? "Adicionar Sala"
-          : "Cadastrar Nova Sala",
+          ? "Adicionar sala"
+          : "Cadastrar sala",
       "Cadastre os recursos e as condições de uso do ambiente.",
       '<form data-form="room" data-edit-id="' +
         (id || "") +
@@ -464,7 +464,7 @@
         };
     if (!t) return;
     show(
-      id ? "Editar Docente" : "Cadastrar Docente",
+      id ? "Editar docente" : "Cadastrar docente",
       "Informações de cadastro e atuação na unidade.",
       '<form data-form="teacher" data-edit-id="' +
         (id || "") +
@@ -482,7 +482,7 @@
         ) +
         field(
           "teacher-nif",
-          "NIF / matrícula",
+          "Matrícula",
           input(
             "teacher-nif",
             t.nif,
@@ -623,7 +623,7 @@
       return;
     }
     show(
-      external ? "Reserva Externa" : "Detalhes da Reserva",
+      external ? "Reserva externa" : "Detalhes da reserva",
       room(record.roomId).name,
       '<div class="detail-grid"><div><span>' +
         (external ? "Organização" : "Docente") +
@@ -677,29 +677,68 @@
         text: room(r.roomId).name + " · " + date(r.date) + " · " + time(r.start) + "–" + time(r.end),
         tone: r.status === "cancelada" ? "warning" : "success",
         icon: r.status === "cancelada" ? "close" : "check",
+        kind: "booking",
       }));
     const upcoming = data.allocations.filter((a) => visible(a) && a.status === "confirmada" &&
       new Date(a.date + "T00:00:00").getTime() + a.end * 3600000 > Date.now())
       .sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start).slice(0, 2);
     for (const a of upcoming) list.push({
-      id: state.role + "-aula-" + a.id, title: "Próxima aula · " + (a.subject || cls(a.classId).name),
+      id: state.role + "-aula-" + a.id, title: a.subject || cls(a.classId).name,
       text: date(a.date) + " · " + time(a.start) + "–" + time(a.end) + " · " + room(a.roomId).name,
-      tone: "info", icon: "calendar",
+      tone: "info", icon: "calendar", kind: "lesson",
     });
     return list;
   }
-  function notifications() {
-    const list = notificationItems();
-    show("Notificações", "Agendamentos e lembretes do seu perfil.",
-      '<div class="notifications-list">' + (list.length ? list.map((n) =>
-        '<article class="notification-item notification-' + n.tone + ' ' +
-        (P.notificationRead.has(n.id) ? 'read' : '') + '">' + icon(n.icon) +
-        '<div><strong>' + esc(n.title) + '</strong><p>' + esc(n.text) + '</p><small>' +
-        (P.notificationRead.has(n.id) ? 'Lida' : 'Não lida') + '</small></div></article>'
-      ).join('') : empty("Nenhuma notificação", "Seus agendamentos e lembretes aparecerão aqui.")) +
-      '</div><div class="form-actions">' + button("Marcar todas como lidas", "notifications-read") + '</div>');
-    P.lastNotifications = list.map((n) => n.id);
+  // Painel suspenso sob o sino, agrupado por tipo; abre e fecha no mesmo botão.
+  const bell = () => document.querySelector(".notification-button");
+  let notifPanel = null;
+  function closeNotifications(returnFocus = false) {
+    if (!notifPanel) return;
+    notifPanel.remove();
+    notifPanel = null;
+    bell()?.setAttribute("aria-expanded", "false");
+    if (returnFocus) bell()?.focus();
   }
+  function renderNotifications() {
+    const list = notificationItems(),
+      unread = list.filter((n) => !P.notificationRead.has(n.id)).length;
+    P.lastNotifications = list.map((n) => n.id);
+    let panel = notifPanel;
+    if (!panel) {
+      panel = notifPanel = document.createElement("div");
+      panel.id = "notification-panel";
+      panel.className = "notif-panel";
+      panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-label", "Notificações");
+      bell().after(panel);
+      bell().setAttribute("aria-expanded", "true");
+    }
+    const row = (n) => '<li class="notif-row' + (P.notificationRead.has(n.id) ? "" : " unread") +
+      '"><span class="notif-icon notif-' + n.tone + '">' + icon(n.icon) + '</span><div><strong>' +
+      esc(n.title) + "</strong><p>" + esc(n.text) + '</p></div><span class="notif-dot" aria-label="' +
+      (P.notificationRead.has(n.id) ? "Lida" : "Não lida") + '"></span></li>';
+    const group = (label, items) => items.length
+      ? '<p class="notif-group">' + label + '</p><ul class="notif-list">' + items.map(row).join("") + "</ul>" : "";
+    panel.innerHTML = '<div class="notif-head"><div><strong>Notificações</strong><span>' +
+      (unread ? unread + (unread === 1 ? " nova" : " novas") : "Tudo em dia") + "</span></div>" +
+      (unread ? '<button type="button" class="text-button" data-action="notifications-read">Marcar como lidas</button>' : "") +
+      '</div><div class="notif-body">' + (list.length
+        ? group("Agendamentos", list.filter((n) => n.kind === "booking")) +
+          group("Próximas aulas", list.filter((n) => n.kind === "lesson"))
+        : empty("Nenhuma notificação", "Agendamentos e lembretes aparecerão aqui.")) + "</div>";
+  }
+  function notifications() {
+    if (notifPanel) closeNotifications();
+    else renderNotifications();
+  }
+  document.addEventListener("click", (event) => {
+    const panel = notifPanel;
+    if (panel && !panel.contains(event.target) && !event.target.closest?.(".notification-button")) closeNotifications();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && notifPanel) closeNotifications(true);
+  });
+  window.addEventListener("hashchange", () => closeNotifications());
   /* Detalhes da aula do docente: sala, horários, turma e disciplina do
      agendamento em andamento ou do próximo, com a agenda do dia. */
   function lessonLine(a) {
@@ -715,7 +754,7 @@
     if (!person) return;
     const now = new Date(),
       hour = now.getHours() + now.getMinutes() / 60,
-      todayLessons = P.teacherSchedule(id, SIPAE_DATA.localDate(now)),
+      todayLessons = P.teacherSchedule(id, MAPPA_DATA.localDate(now)),
       situation = P.teacherSituation(person, now),
       upcoming = data.allocations
         .filter((a) => a.teacherId === id && a.status === "confirmada" &&
@@ -826,7 +865,7 @@
   const weekStart = (value) => {
     const d = new Date(value + "T12:00:00Z");
     d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
-    return SIPAE_DATA.dateString(d);
+    return MAPPA_DATA.dateString(d);
   };
   function scrollTodayIntoView() {
     const cell = document.querySelector(
@@ -870,7 +909,7 @@
         d.setUTCMonth(d.getUTCMonth() + direction);
       } else if (f.view === "day") d.setUTCDate(d.getUTCDate() + direction);
       else d.setUTCDate(d.getUTCDate() + 7 * direction);
-      f.anchor = SIPAE_DATA.dateString(d);
+      f.anchor = MAPPA_DATA.dateString(d);
     }
     S.render();
     if (mode === "today") {
@@ -909,7 +948,7 @@
       show(
         "Recuperar acesso",
         "Este é um ambiente demonstrativo.",
-        '<p>Use o NIF <strong>123456789</strong> e a senha <strong>sipae2026</strong> para acessar qualquer um dos três perfis.</p><div class="form-actions">' +
+        '<p>Use a matrícula <strong>123456789</strong> e a senha <strong>mappa2026</strong> para acessar qualquer um dos três perfis.</p><div class="form-actions">' +
           button("Voltar ao login", "close") +
           "</div>",
       );
@@ -957,7 +996,7 @@
     if (action === "teacher-toggle" && state.role === "diretor") {
       const t = teacher(id);
       show(
-        t.status === "ativo" ? "Desativar Docente" : "Reativar Docente",
+        t.status === "ativo" ? "Desativar docente" : "Reativar docente",
         t.name,
         "<p>" +
           (t.status === "ativo"
@@ -991,8 +1030,8 @@
     if (action === 'external-cancel-confirm') {
       const [scope, rid] = id.split('|');
       if (state.role !== 'diretor' || externalCancellation?.id !== rid || externalCancellation?.scope !== scope) return;
-      if (typeof SIPAE_EXTERNAL_BOOKING === 'undefined') return;
-      const result = SIPAE_EXTERNAL_BOOKING.cancel(data, state.role, rid, scope, new Date());
+      if (typeof MAPPA_EXTERNAL_BOOKING === 'undefined') return;
+      const result = MAPPA_EXTERNAL_BOOKING.cancel(data, state.role, rid, scope, new Date());
       if (result.error) {
         S.toast(result.error || 'Não foi possível cancelar os dias selecionados.');
         return;
@@ -1042,9 +1081,8 @@
     if (action === "notifications-read") {
       P.lastNotifications.forEach((id) => P.notificationRead.add(id));
       P.notificationRead.add("all-" + state.role);
-      notifications();
+      if (notifPanel) renderNotifications();
       afterRender();
-      S.toast("Todas as notificações foram marcadas como lidas.");
       return;
     }
     if (action === "calendar-day" || action === "teacher-day") {
@@ -1136,7 +1174,7 @@
     if (type === "login") {
       if (
         get("login-nif") !== "123456789" ||
-        get("login-password") !== "sipae2026"
+        get("login-password") !== "mappa2026"
       ) {
         formError(form, "Use as credenciais de demonstração indicadas abaixo.");
         return;
@@ -1145,8 +1183,8 @@
       if (!["docente", "coordenador", "diretor"].includes(role)) return;
       try {
         if (values.has("remember"))
-          localStorage.setItem("sipae-demo-role", role);
-        else localStorage.removeItem("sipae-demo-role");
+          localStorage.setItem("mappa-demo-role", role);
+        else localStorage.removeItem("mappa-demo-role");
       } catch {}
       location.hash = role + "/dashboard";
       return;
@@ -1238,7 +1276,7 @@
       for (let i = 0; i < count; i++) {
         const d = new Date(base.date + "T12:00Z");
         d.setUTCDate(d.getUTCDate() + i * 7);
-        const r = { ...base, date: SIPAE_DATA.dateString(d) };
+        const r = { ...base, date: MAPPA_DATA.dateString(d) };
         const error = M.validateBooking(data, r);
         if (error) return formError(form, date(r.date) + ": " + error);
         bookings.push(r);
@@ -1351,7 +1389,7 @@
         t = id ? teacher(id) : null,
         nif = get("teacher-nif");
       if (data.teachers.some((x) => x.id !== id && x.nif === nif))
-        return formError(form, "Já existe um docente com esse NIF.");
+        return formError(form, "Já existe um docente com essa matrícula.");
       const disciplines = get("teacher-subjects")
         .split(",")
         .map((x) => x.trim())

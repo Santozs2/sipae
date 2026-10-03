@@ -7,8 +7,8 @@
 .external-steps { display:flex; list-style:none; padding:0; margin:22px 0 28px; gap:10px; }
 .external-steps li { flex:1; display:flex; align-items:center; gap:8px; padding:10px 8px; font-size:.74rem; color:#68768b; border-bottom:2px solid #e5eaf1; }
 .external-steps li > span { display:grid; place-items:center; flex-shrink:0; width:23px; height:23px; background:#edf1f7; border-radius:50%; font-weight:700; }
-.external-steps li[aria-current] { color:#a21d38; border-color:#c52642; font-weight:700; }
-.external-steps li[aria-current] > span { color:white; background:#bb2340; }
+.external-steps li[aria-current] { color:var(--brand-strong); border-color:var(--brand); font-weight:700; }
+.external-steps li[aria-current] > span { color:white; background:var(--brand); }
 .external-help { font-size:.8rem; color:#62718a; line-height:1.75; margin:12px 0 22px; }
 .external-period-summary { display:flex; flex-wrap:wrap; gap:12px 20px; padding:16px 18px; background:#f1f5fa; color:#415775; border-radius:12px; margin:0 0 22px; font-size:.77rem; }
 .external-period-summary span { display:flex; gap:8px; align-items:center; }

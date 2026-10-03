@@ -3,15 +3,21 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#111216" />
+    <meta name="theme-color" content="#0f1a1e" />
     <meta
       name="description"
-      content="SIPAE — Planejamento e agendamento de espaços do SENAI São José do Rio Preto."
+      content="Mappa — o lugar certo para cada aula. Alocação e agendamento de espaços acadêmicos."
     />
-    <title>SIPAE · Planejamento de espaços</title>
+    <title>Mappa · Planejamento de espaços</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23cc243b'/%3E%3Ctext x='32' y='46' font-family='Arial' font-size='43' font-weight='700' text-anchor='middle' fill='white'%3ES%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230f766e'/%3E%3Csvg x='13' y='15' width='38' height='34' viewBox='348 361 557 496' fill='white'%3E%3Cpath d='M348 405 428 361 614 489V583L428 457V857H348Z'/%3E%3Cpath d='M905 405 826 361 639 489V583L826 457V857H905Z'/%3E%3Cpath d='M458 573H555L611 611V722H487V661H458Z'/%3E%3Cpath d='M795 573H698L642 611V722H766V661H795Z'/%3E%3Cpath d='M453 750H611V857H453Z'/%3E%3Cpath d='M642 750H801V857H642Z'/%3E%3C/svg%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,400..600&display=swap"
     />
     <link rel="stylesheet" href="styles.css?v=refino-2026-09k" />
     <link rel="stylesheet" href="pages.css?v=refino-2026-09k" />
@@ -19,14 +25,15 @@
     <link rel="stylesheet" href="login.css?v=refino-2026-09i" />
     <link rel="stylesheet" href="planning.css?v=refino-2026-09i" />
     <link rel="stylesheet" href="external-reservation.css?v=refino-2026-09i" />
-    <script src="data.js?v=refino-2026-09i" defer></script>
+    <link rel="stylesheet" href="refine.css?v=mappa-7" />
+    <script src="data.js?v=mappa-6" defer></script>
     <script src="metrics.js?v=refino-2026-09i" defer></script>
-    <script src="app.js?v=refino-2026-09j" defer></script>
+    <script src="app.js?v=mappa-6" defer></script>
     <script src="room-media.js?v=refino-2026-09i" defer></script>
     <script src="charts.js?v=refino-2026-09j" defer></script>
-    <script src="views.js?v=refino-2026-09k" defer></script>
-    <script src="pages.js?v=refino-2026-09k" defer></script>
-    <script src="actions.js?v=refino-2026-09k" defer></script>
+    <script src="views.js?v=mappa-6" defer></script>
+    <script src="pages.js?v=mappa-6" defer></script>
+    <script src="actions.js?v=mappa-6" defer></script>
     <script src="external-booking.js?v=refino-2026-09i" defer></script>
     <script src="external-reservation.js?v=refino-2026-09i" defer></script>
     <script src="room-search.js?v=refino-2026-09i" defer></script>
@@ -38,9 +45,9 @@
     <a class="skip" href="#main">Ir para o conteúdo</a>
     <aside class="sidebar" id="sidebar" aria-label="Menu principal">
       <button type="button" class="sidebar-close icon-button" id="sidebar-close" aria-label="Fechar menu">×</button>
-      <a class="brand" href="#coordenador/dashboard" aria-label="SIPAE início"
-        ><span class="brand-mark">S</span
-        ><span>SIPAE<small>GESTÃO DE ESPAÇOS</small></span></a
+      <a class="brand" href="#coordenador/dashboard" aria-label="Mappa início"
+        ><span class="brand-mark"><svg class="logo-glyph" viewBox="348 361 557 496" aria-hidden="true" focusable="false" fill="currentColor"><path d="M348 405 428 361 614 489V583L428 457V857H348Z"/><path d="M905 405 826 361 639 489V583L826 457V857H905Z"/><path d="M458 573H555L611 611V722H487V661H458Z"/><path d="M795 573H698L642 611V722H766V661H795Z"/><path d="M453 750H611V857H453Z"/><path d="M642 750H801V857H642Z"/></svg></span
+        ><span>MAPPA<small>GESTÃO DE ESPAÇOS</small></span></a
       >
       <span class="nav-caption">PLANEJAMENTO</span>
       <nav id="navigation" aria-label="Navegação principal"></nav>
@@ -51,10 +58,10 @@
           href="#docente/perfil"
           aria-label="Abrir meu perfil"
           title="Meu perfil"
-          >ES</a
+          >HD</a
         >
         <div>
-          <strong id="profile-name">Edvaldo Saran</strong
+          <strong id="profile-name">Helena Duarte</strong
           ><span id="profile-role">Coordenação</span>
         </div>
         <a
@@ -62,7 +69,7 @@
           href="#login"
           aria-label="Sair da conta"
           title="Sair da conta"
-          >Sair ↗</a
+          >Sair</a
         >
       </div>
     </aside>
@@ -78,34 +85,44 @@
             aria-expanded="false"
           >
             ☰</button
-          ><span>SIPAE</span><span class="crumb-divider">/</span
+          ><span>Mappa</span><span class="crumb-divider">/</span
           ><strong id="page-crumb">Visão geral</strong>
         </div>
         <div class="topbar-right">
           <span class="demo-label"><i></i>Dados de demonstração</span
-          ><label class="sr-only" for="role-switch"
-            >Perfil de demonstração</label
-          ><select id="role-switch">
+          ><select id="role-switch" hidden tabindex="-1" aria-hidden="true">
             <option value="docente">Docente</option>
             <option value="coordenador">Coordenador</option>
-            <option value="diretor">Diretor · Unidade</option></select
-          ><button
+            <option value="diretor">Diretor</option></select
+          ><div class="role-menu" id="role-menu">
+            <button type="button" class="role-trigger" id="role-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="role-options">
+              <span class="sr-only">Perfil de demonstração:</span><span class="role-trigger-label" id="role-trigger-label">Docente</span>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+            </button>
+            <ul class="role-options" id="role-options" role="listbox" aria-label="Perfil de demonstração" tabindex="-1" hidden>
+              <li role="option" data-role="docente"><strong>Docente</strong><span>Aulas e reservas próprias</span></li>
+              <li role="option" data-role="coordenador"><strong>Coordenação</strong><span>Agenda, salas e docentes</span></li>
+              <li role="option" data-role="diretor"><strong>Direção</strong><span>Indicadores e reservas externas</span></li>
+            </ul>
+          </div><button
             class="icon-button notification-button"
             data-action="notifications"
             aria-label="Notificações"
+            aria-haspopup="dialog"
+            aria-expanded="false"
           >
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5l-2 3 M10 21h4" /></svg
             ><i id="notification-dot"></i></button
-          ><span class="senai">SENAI</span>
+          >
         </div>
       </header>
       <main id="main" tabindex="-1"></main>
       <footer class="footer">
         <span
-          >SIPAE <span class="footer-dot">·</span> Sistema Integrado de
-          Planejamento e Agendamento de Espaços</span
-        ><span>SENAI São José do Rio Preto</span>
+          >Mappa <span class="footer-dot">·</span> Sistema de Alocação e
+          Agendamento de Espaços</span
+        ><span>Unidade de demonstração</span>
       </footer>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>

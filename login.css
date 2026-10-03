@@ -32,7 +32,7 @@
   position: relative;
   overflow: hidden;
   padding: 42px 44px 28px;
-  background: #161a25;
+  background: var(--sidebar);
   color: #fff;
 }
 .login-mode .login-story::after {
@@ -54,10 +54,10 @@
 .login-mode .login-logo {
   padding: 7px 11px;
   border-radius: 4px;
-  background: #bd1834;
+  background: var(--brand);
   color: #fff;
-  font: italic 800 22px/1 "Segoe UI", sans-serif;
-  letter-spacing: -1.2px;
+  font: 800 22px/1 var(--font, "Plus Jakarta Sans"), sans-serif;
+  letter-spacing: 0;
 }
 .login-mode .login-story-brand-name {
   display: block;
@@ -81,7 +81,7 @@
 }
 .login-mode .login-eyebrow {
   display: block;
-  color: #d3a8b1;
+  color: var(--brand-light);
   font-size: 9px;
   letter-spacing: 1.35px;
   line-height: 1.7;
@@ -97,7 +97,7 @@
 }
 .login-mode .login-story-copy h2 em {
   font-style: normal;
-  color: #ef9baa;
+  color: var(--brand-light);
 }
 .login-mode .login-story-copy p {
   margin: 0;
@@ -119,7 +119,7 @@
   top: 24px;
   width: 290px;
   height: 290px;
-  border: 1px solid #a1718521;
+  border: 1px solid #5eead421;
   border-radius: 50%;
 }
 .login-mode .login-agenda {
@@ -128,7 +128,7 @@
   padding: 18px;
   border: 1px solid #ffffff21;
   border-radius: 14px;
-  background: #252b39;
+  background: #1a2a2f;
   box-shadow: 0 22px 40px #00000020;
   transform: rotate(-3deg);
 }
@@ -149,7 +149,7 @@
 .login-mode .login-agenda-top i {
   width: 7px;
   height: 7px;
-  background: #eaa0ae;
+  background: var(--brand-light);
   border-radius: 2px;
 }
 .login-mode .login-agenda-top b {
@@ -180,9 +180,9 @@
   margin: 4px;
   padding: 6px 8px;
   border-radius: 5px;
-  border-left: 2px solid #ef9baa;
-  background: #493342;
-  color: #ffdfE6;
+  border-left: 2px solid var(--brand-light);
+  background: var(--brand-deep);
+  color: var(--brand-light);
   font-size: 8px;
 }
 .login-mode .login-agenda-event b {
@@ -241,8 +241,8 @@
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: #f9e9ed;
-  color: #bd1834;
+  background: var(--brand-soft);
+  color: var(--brand);
 }
 .login-mode .login-space-icon .icon {
   width: 18px;
@@ -290,7 +290,7 @@
   margin-bottom: 30px;
 }
 .login-mode .login-form-kicker {
-  color: #bd1834;
+  color: var(--brand);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 1.3px;
@@ -304,7 +304,7 @@
   font-weight: 740;
 }
 .login-mode .login-brand h1 span {
-  color: #bd1834;
+  color: var(--brand);
 }
 .login-mode .login-brand p {
   margin: 0;
@@ -334,9 +334,9 @@
 }
 .login-mode .login-box .field input:focus,
 .login-mode .login-box .field select:focus {
-  outline: 2px solid #bd1834;
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
-  border-color: #bd1834;
+  border-color: var(--brand);
   background: #fff;
 }
 .login-mode .login-box .password-wrap button {
@@ -357,7 +357,7 @@
   color: #657086;
 }
 .login-mode .login-tools .text-button {
-  color: #bd1834;
+  color: var(--brand);
   font-weight: 650;
 }
 .login-mode .login-box .button.primary {
@@ -367,18 +367,18 @@
   min-height: 47px;
   margin-top: 24px;
   padding: 12px 18px;
-  border: 1px solid #bd1834;
+  border: 1px solid var(--brand);
   border-radius: 9px;
   color: #fff;
-  background: #bd1834;
+  background: var(--brand);
   font-size: 12px;
   font-weight: 650;
-  box-shadow: 0 5px 12px #bd183415;
+  box-shadow: 0 5px 12px color-mix(in srgb, var(--brand) 8%, transparent);
 }
 .login-mode .login-box .button.primary:hover {
-  background: #a8122c;
-  border-color: #a8122c;
-  box-shadow: 0 6px 16px #bd183424;
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 14%, transparent);
 }
 .login-mode .login-box .button.primary span {
   font-size: 17px;

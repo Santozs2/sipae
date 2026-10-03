@@ -2,10 +2,10 @@ const fs=require('node:fs'), path=require('node:path'), vm=require('node:vm'), a
 process.env.TZ='America/Sao_Paulo';
 const root=path.resolve(__dirname,'..'), ctx=vm.createContext({Date,Intl,console});
 for(const file of ['data.js','metrics.js','room-search.js','report-details.js']) vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),ctx,{filename:file});
-const M=ctx.SIPAE_METRICS, find=ctx.SIPAE_ROOM_SEARCH.search, collect=ctx.SIPAE_REPORT_DETAILS.collect;
+const M=ctx.MAPPA_METRICS, find=ctx.MAPPA_ROOM_SEARCH.search, collect=ctx.MAPPA_REPORT_DETAILS.collect;
 const now=new Date('2026-09-11T12:00:00-03:00'), results=[];
 function check(name,fn){try{fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}}
-function setup(){const data=ctx.SIPAE_DATA.create();data.allocations=[];data.requests=[];data.externalReservations=[];data.rooms.forEach(r=>r.createdDate='2026-01-01');const q={date:'2026-10-05',teacherId:'t4',classId:'c3',disciplineId:data.teacherSubjects.find(s=>s.teacherId==='t4').id,duration:2,resources:[]};return{data,q};}
+function setup(){const data=ctx.MAPPA_DATA.create();data.allocations=[];data.requests=[];data.externalReservations=[];data.rooms.forEach(r=>r.createdDate='2026-01-01');const q={date:'2026-10-05',teacherId:'t4',classId:'c3',disciplineId:data.teacherSubjects.find(s=>s.teacherId==='t4').id,duration:2,resources:[]};return{data,q};}
 function search(data,q,role='docente'){return find(data,M,q,role,now);}
 check('Busca na unidade respeita capacidade, recursos e turno sem alterar dados',()=>{const{data,q}=setup();q.resources=['Computadores','Projetor'];const before=JSON.stringify(data);const r=search(data,q);assert.equal(r.error,'');assert.ok(r.rooms.length);for(const{room,slots}of r.rooms){assert.equal(room.areaId,'unidade');assert.ok(room.capacity>=18);assert.ok(room.resources.includes('Computadores')&&room.resources.includes('Projetor'));for(const s of slots){assert.ok(s.start>=13&&s.end<=17);assert.equal(s.end-s.start,2);assert.equal(M.validateBooking(data,s),null);}}assert.equal(JSON.stringify(data),before);});
 check('Turma de 30 alunos elimina salas pequenas',()=>{const{data,q}=setup();q.classId='c1';const r=search(data,q);assert.ok(r.rooms.length);assert.ok(r.rooms.every(x=>x.room.capacity>=30));});

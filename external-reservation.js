@@ -1,8 +1,8 @@
 (function () {
   "use strict";
-  const S = SIPAE, { data, state, U, P } = S;
+  const S = MAPPA, { data, state, U, P } = S;
   const { esc, date, time, hours, icon } = U;
-  const engine = SIPAE_EXTERNAL_BOOKING;
+  const engine = MAPPA_EXTERNAL_BOOKING;
   let draft = null, matches = null, created = null;
   const action = (label, name, id = "", tone = "secondary") =>
     '<button type="button" class="button ' + tone + '" data-external-action="' + name + '" data-id="' + esc(id) + '">' + label + '</button>';
@@ -34,7 +34,7 @@
     period();
   }
   function period() {
-    const today = SIPAE_DATA.localDate();
+    const today = MAPPA_DATA.localDate();
     show(0, '<form data-external-form="period"><h3>Quando será o evento?</h3><p class="external-help">Escolha o período e os dias da semana. O horário será reservado somente nesses dias, entre a data inicial e a final. Você pode escolher um dia, vários meses ou um período maior.</p><div class="form-grid">' +
       P.field("direct-first", "Data inicial", P.input("direct-first", draft.startDate, "date", 'required min="' + today + '"')) +
       P.field("direct-last", "Data final", P.input("direct-last", draft.endDate, "date", 'required min="' + draft.startDate + '"')) +

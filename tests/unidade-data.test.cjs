@@ -14,7 +14,7 @@ function createFactory(instant = '2026-09-12T12:00:00-03:00') {
   }
   const context = vm.createContext({ Date: FixedDate });
   vm.runInContext(source, context, { filename: 'data.js' });
-  return context.SIPAE_DATA.create;
+  return context.MAPPA_DATA.create;
 }
 
 function visit(value, fn, location = 'data') {
@@ -48,17 +48,17 @@ test('A normalização preserva docentes, ambientes, turmas e a identidade dos g
   assert.equal(data.rooms.length, 18);
   assert.equal(data.teachers.length, 14);
   assert.equal(data.classes.length, 16);
-  assert.equal(data.teachers.find(record => record.id === 't4').name, 'Daniel Oliveira');
+  assert.equal(data.teachers.find(record => record.id === 't4').name, 'Gabriel Oliveira');
   assert.equal(data.rooms.find(record => record.id === 'r7').name, 'Oficina de Mecânica');
   assert.equal(data.rooms.find(record => record.id === 'r7').capacity, 30);
   assert.equal(data.classes.find(record => record.id === 'c7').code, 'MEC-01');
   const coordinator = data.managementProfiles.coordenador;
-  assert.equal(coordinator.name, 'Edvaldo Saran');
+  assert.equal(coordinator.name, 'Helena Duarte');
   assert.equal(coordinator.email, 'coordenacao@example.org');
   assert.equal(coordinator.nif, '100015');
   assert.equal(coordinator.roleLabel, 'Coordenação');
   assert.equal(coordinator.areaLabel, 'Unidade');
-  assert.equal(data.managementProfiles.diretor.name, 'Malta');
+  assert.equal(data.managementProfiles.diretor.name, 'Ricardo Moreira');
   assert.equal(data.managementProfiles.diretor.email, 'direcao@example.org');
   assert.equal(data.managementProfiles.diretor.nif, '100016');
 });

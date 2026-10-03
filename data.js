@@ -1,4 +1,4 @@
-/* SIPAE — dados fictícios e determinísticos. Nenhuma informação pessoal real. */
+/* Mappa — dados fictícios e determinísticos. Nenhuma informação pessoal real. */
 (function (global) {
   "use strict";
   // Estes grupos privados só organizam as fixtures de aulas por afinidade.
@@ -11,9 +11,9 @@
       color: "#6686b5",
     },
     {
-      id: "industria",
-      name: "Indústria",
-      short: "Indústria",
+      id: "exatas",
+      name: "Engenharias e Ciências",
+      short: "Exatas",
       color: "#95a79c",
     },
     { id: "gestao", name: "Gestão", short: "Gestão", color: "#b4a3bd" },
@@ -54,7 +54,7 @@
     ["ti", "Sala A05", "Sala teórica", "A", 40, "Projetor;Lousa;Internet"],
     ["ti", "Sala A06", "Sala teórica", "A", 36, "Projetor;Lousa;Internet"],
     [
-      "industria",
+      "exatas",
       "Oficina de Mecânica",
       "Oficina de mecânica",
       "B",
@@ -62,47 +62,47 @@
       "Bancadas;Ferramentas;EPIs",
     ],
     [
-      "industria",
-      "Oficina de Soldagem",
-      "Oficina de soldagem",
+      "exatas",
+      "Oficina Maker",
+      "Oficina maker",
       "B",
       20,
-      "Máquinas de solda;Exaustão;EPIs",
+      "Impressoras 3D;Cortadora a laser;EPIs",
     ],
     [
-      "industria",
-      "Oficina de Usinagem",
-      "Oficina de usinagem",
+      "exatas",
+      "Oficina de Prototipagem",
+      "Oficina de prototipagem",
       "B",
       24,
-      "Tornos;Fresas;EPIs",
+      "Fresadora CNC;Bancadas;EPIs",
     ],
     [
-      "industria",
-      "Lab. de Eletroeletrônica",
-      "Laboratório de eletroeletrônica",
+      "exatas",
+      "Lab. de Eletrônica",
+      "Laboratório de eletrônica",
       "B",
       28,
       "Bancadas;Multímetros;Projetor",
     ],
     [
-      "industria",
-      "Lab. de Automação",
-      "Laboratório de automação",
+      "exatas",
+      "Lab. de Robótica",
+      "Laboratório de robótica",
       "B",
       24,
-      "CLPs;Robôs;Computadores",
+      "Kits de robótica;Robôs;Computadores",
     ],
     [
-      "industria",
+      "exatas",
       "Lab. de Química",
       "Laboratório de química",
       "C",
       20,
       "Capela;Vidrarias;EPIs",
     ],
-    ["industria", "Sala B07", "Sala teórica", "B", 40, "Projetor;Lousa"],
-    ["industria", "Sala B08", "Sala teórica", "B", 32, "Projetor;Lousa"],
+    ["exatas", "Sala B07", "Sala teórica", "B", 40, "Projetor;Lousa"],
+    ["exatas", "Sala B08", "Sala teórica", "B", 32, "Projetor;Lousa"],
     ["gestao", "Sala C01", "Sala teórica", "C", 40, "Projetor;Lousa;Internet"],
     ["gestao", "Sala C02", "Sala teórica", "C", 30, "Projetor;Lousa;Internet"],
     [
@@ -131,80 +131,56 @@
     resources: r[5].split(";"),
     status: i === 11 ? "manutencao" : "ativo",
   }));
+  // O último campo lista as turmas que cada docente pode assumir, de acordo
+  // com a sua especialidade. O gerador da agenda respeita essa restrição.
   const fixtureTeachers = [
-    ["ti", "Mariana Costa", "Desenvolvimento de sistemas", 20],
-    ["ti", "Rafael Almeida", "Redes de computadores", 40],
-    ["ti", "Beatriz Nascimento", "Multimídia", 30],
-    ["ti", "Daniel Oliveira", "Programação", 40],
-    ["ti", "Fernanda Ribeiro", "Tecnologia da informação", 20],
-    ["industria", "André Oliveira", "Mecânica", 40],
-    ["industria", "Patrícia Santos", "Eletroeletrônica", 30],
-    ["industria", "Bruno Rodrigues", "Soldagem", 20],
-    ["industria", "Jéssica Lima", "Automação", 40],
-    ["industria", "Leandro Souza", "Usinagem", 30],
-    ["gestao", "Camila Barros", "Administração", 40],
-    ["gestao", "Diego Martins", "Logística", 30],
-    ["gestao", "Aline Gomes", "Gestão de pessoas", 20],
-    ["gestao", "Renato Azevedo", "Empreendedorismo", 20],
+    ["ti", "Mariana Costa", "Engenharia de software", 20, "c1 c3 c4"],
+    ["ti", "Rafael Almeida", "Redes de computadores", 40, "c2"],
+    ["ti", "Beatriz Nascimento", "Desenvolvimento web", 30, "c3 c6"],
+    ["ti", "Gabriel Oliveira", "Programação e banco de dados", 40, "c3 c5 c6"],
+    ["ti", "Fernanda Ribeiro", "Ciência de dados", 20, "c5"],
+    ["exatas", "André Oliveira", "Engenharia mecânica", 40, "c7 c12"],
+    ["exatas", "Patrícia Santos", "Engenharia elétrica", 30, "c8 c11"],
+    ["exatas", "Bruno Rodrigues", "Fabricação digital", 20, "c9"],
+    ["exatas", "Jéssica Lima", "Robótica", 40, "c11"],
+    ["exatas", "Leandro Souza", "Física", 30, "c10 c12"],
+    ["gestao", "Camila Barros", "Administração", 40, "c13 c16"],
+    ["gestao", "Diego Martins", "Logística", 30, "c14 c15"],
+    ["gestao", "Aline Gomes", "Gestão de projetos", 20, "c16 c13"],
+    ["gestao", "Renato Azevedo", "Empreendedorismo", 20, "c15"],
   ].map((r, i) => ({
     id: "t" + (i + 1),
     areaId: r[0],
     name: r[1],
     specialty: r[2],
     contractHours: r[3],
+    classIds: r[4].split(" "),
   }));
+  const teaches = (teacher, cls) => teacher.classIds.includes(cls.id);
   const fixtureClasses = [
-    ["ti", "DEV-01", "Desenvolvimento de Sistemas", "Técnico", "manha", 30],
+    ["ti", "ESW-01", "Engenharia de Software", "Graduação", "manha", 30],
+    ["ti", "RED-01", "Redes de Computadores", "Graduação", "manha", 24],
+    ["ti", "WEB-01", "Programação Web", "Extensão", "tarde", 18],
+    ["ti", "ESW-02", "Engenharia de Software", "Graduação", "noite", 28],
+    ["ti", "DAD-01", "Ciência de Dados", "Curso livre", "noite", 16],
+    ["ti", "CMP-01", "Computação Aplicada", "Extensão", "noite", 20],
+    ["exatas", "MEC-01", "Engenharia Mecânica", "Graduação", "manha", 26],
+    ["exatas", "ELE-01", "Engenharia Elétrica", "Graduação", "manha", 20],
+    ["exatas", "FAB-01", "Fabricação Digital", "Extensão", "tarde", 18],
+    ["exatas", "FIS-01", "Física Experimental", "Graduação", "tarde", 22],
+    ["exatas", "ROB-01", "Robótica e Controle", "Pós-graduação", "noite", 24],
     [
-      "ti",
-      "RED-01",
-      "Redes de Computadores",
-      "Aprendizagem industrial",
-      "manha",
-      24,
-    ],
-    ["ti", "WEB-01", "Programação Web", "Qualificação", "tarde", 18],
-    ["ti", "DEV-02", "Desenvolvimento de Sistemas", "Técnico", "noite", 28],
-    ["ti", "PYT-01", "Python para Iniciantes", "Curso livre", "noite", 16],
-    ["ti", "INF-01", "Informática Aplicada", "Qualificação", "noite", 20],
-    ["industria", "MEC-01", "Mecânica de Precisão", "Técnico", "manha", 26],
-    [
-      "industria",
-      "ELE-01",
-      "Eletroeletrônica",
-      "Aprendizagem industrial",
-      "manha",
-      20,
-    ],
-    ["industria", "SOL-01", "Soldagem", "Qualificação", "tarde", 18],
-    [
-      "industria",
-      "USI-01",
-      "Usinagem Convencional",
-      "Aprendizagem industrial",
-      "tarde",
-      22,
-    ],
-    ["industria", "AUT-01", "Automação Industrial", "Técnico", "noite", 24],
-    [
-      "industria",
-      "NR10-01",
-      "Segurança em Eletricidade",
+      "exatas",
+      "SEG-01",
+      "Segurança em Laboratórios",
       "Curso livre",
       "noite",
       16,
     ],
-    ["gestao", "ADM-01", "Administração", "Técnico", "manha", 38],
-    ["gestao", "LOG-01", "Logística", "Aprendizagem industrial", "tarde", 28],
+    ["gestao", "ADM-01", "Administração", "Graduação", "manha", 38],
+    ["gestao", "LOG-01", "Logística", "Graduação", "tarde", 28],
     ["gestao", "EMP-01", "Empreendedorismo", "Curso livre", "noite", 12],
-    [
-      "gestao",
-      "GES-01",
-      "Assistente Administrativo",
-      "Qualificação",
-      "noite",
-      26,
-    ],
+    ["gestao", "GPR-01", "Gestão de Projetos", "Pós-graduação", "noite", 26],
   ].map((r, i) => ({
     id: "c" + (i + 1),
     areaId: r[0],
@@ -299,9 +275,12 @@
           ),
       );
       if (!ts.length) return false;
-      const cls = cs[(day + template.length) % cs.length];
-      let teacher = forceTeacher ? ts.find((t) => t.id === forceTeacher) : null;
-      if (!teacher) teacher = ts[(day + template.length) % ts.length];
+      // Só formam par turma e docente habilitado para ela.
+      let pairs = cs.flatMap((c) => ts.filter((t) => teaches(t, c)).map((t) => [c, t]));
+      if (forceTeacher && pairs.some(([, t]) => t.id === forceTeacher))
+        pairs = pairs.filter(([, t]) => t.id === forceTeacher);
+      if (!pairs.length) return false;
+      const [cls, teacher] = pairs[(day + template.length) % pairs.length];
       const slot = shifts.find((s) => s.id === shift);
       template.push({
         day,
@@ -471,7 +450,7 @@
                   c.students <= room.capacity,
               ))
                 for (const teacher of teachers.filter(
-                  (t) => t.areaId === area.id,
+                  (t) => t.areaId === area.id && teaches(t, cls),
                 )) {
                   if (date === "2026-08-26" && shift === "manha") continue;
                   if (
@@ -589,7 +568,7 @@
     });
     activeConflicts.push({
       id: "cf-manutencao",
-      areaId: "industria",
+      areaId: "exatas",
       kind: "manutencao",
       status: "ativo",
       date: "2026-08-28",
@@ -630,7 +609,7 @@
     const externalReservations = [
       {
         id: "ext-01",
-        organization: "Associação Industrial Rio Preto",
+        organization: "Associação Comercial e Empresarial",
         contact: "eventos@example.org",
         roomId: "r17",
         areaId: "gestao",
@@ -638,7 +617,7 @@
         start: 13,
         end: 16,
         shift: "tarde",
-        purpose: "Encontro de inovação e desenvolvimento industrial",
+        purpose: "Encontro de inovação e desenvolvimento regional",
         attendees: 70,
         status: "pendente",
         priority: "normal",
@@ -660,7 +639,7 @@
       },
       {
         id: "ext-03",
-        organization: "Fórum de Educação Profissional",
+        organization: "Fórum de Educação e Inovação",
         contact: "forum@example.org",
         roomId: "r17",
         areaId: "gestao",
@@ -708,7 +687,7 @@
     teachers.forEach((t, i) =>
       Object.assign(t, {
         email: "docente" + (i + 1) + "@example.org",
-        phone: "(17) 0000-0000",
+        phone: "(00) 0000-0000",
         nif: String(100001 + i),
         status: "ativo",
         disciplines: [t.specialty],
@@ -764,7 +743,7 @@
       const day = new Date(today + "T12:00:00Z");
       day.setUTCDate(day.getUTCDate() + dayOffset);
       if ([0, 6].includes(day.getUTCDay())) continue;
-      const classId = ["c3", "c5", "c4"][nextLesson % 3];
+      const classId = ["c3", "c5", "c6"][nextLesson % 3];
       const group = classes.find((c) => c.id === classId);
       const slot = shifts.find((s) => s.id === group.shift);
       for (const target of rooms.filter((r) => r.areaId === "ti" && r.status === "ativo" && r.capacity >= group.students)) {
@@ -780,21 +759,36 @@
       }
     }
     // Créditos mensais fixados ao preparar a demonstração; as operações nunca ampliam a cota.
+    // Cada turma tem uma disciplina coerente com o seu curso.
     const subjectNames = {
-      c1: "Programação Web",
+      c1: "Engenharia de Requisitos",
       c2: "Redes de Computadores",
-      c3: "Banco de Dados",
-      c4: "Programação Web",
-      c5: "Lógica de Programação",
-      c6: "Sistemas Operacionais",
+      c3: "Desenvolvimento Web",
+      c4: "Arquitetura de Software",
+      c5: "Banco de Dados",
+      c6: "Lógica de Programação",
+      c7: "Resistência dos Materiais",
+      c8: "Circuitos Elétricos",
+      c9: "Impressão 3D e Prototipagem",
+      c10: "Laboratório de Física",
+      c11: "Sistemas de Controle",
+      c12: "Segurança em Laboratórios",
+      c13: "Teoria Geral da Administração",
+      c14: "Cadeia de Suprimentos",
+      c15: "Plano de Negócios",
+      c16: "Gestão Ágil de Projetos",
     };
     const teacherSubjects = [];
     for (const t of teachers) {
       const records = [...allocations, ...requests].filter(
         (a) => a.teacherId === t.id,
       );
+      // Disciplinas do docente: as das turmas que ele pode assumir.
       const names = [
-        ...new Set(records.map((a) => subjectNames[a.classId] || t.specialty)),
+        ...new Set([
+          ...records.map((a) => subjectNames[a.classId] || t.specialty),
+          ...t.classIds.map((id) => subjectNames[id]),
+        ]),
       ];
       if (t.id === "t4" && !names.includes("Banco de Dados"))
         names.push("Banco de Dados");
@@ -828,10 +822,10 @@
     }
     const instance = {
       managementProfiles: {
-        coordenador: { name: "Edvaldo", email: "coordenacao@example.org", phone: "(17) 0000-0000",
+        coordenador: { name: "Helena Duarte", email: "coordenacao@example.org", phone: "(00) 0000-0000",
           nif: "100015", roleLabel: "Coordenação", areaLabel: "Unidade" },
-        diretor: { name: "Malta", email: "direcao@example.org", phone: "(17) 0000-0000",
-          nif: "100016", roleLabel: "Direção da unidade", areaLabel: "Unidade SENAI Rio Preto" },
+        diretor: { name: "Ricardo Moreira", email: "direcao@example.org", phone: "(00) 0000-0000",
+          nif: "100016", roleLabel: "Direção da unidade", areaLabel: "Unidade" },
       },
       teacherSubjects,
       externalReservations,
@@ -855,5 +849,5 @@
     // de grupos das fixtures nunca ficam expostos como escopo ou permissão.
     return copyData(instance, true);
   }
-  global.SIPAE_DATA = { create: makeData, dates, dateString, localDate };
+  global.MAPPA_DATA = { create: makeData, dates, dateString, localDate };
 })(globalThis);

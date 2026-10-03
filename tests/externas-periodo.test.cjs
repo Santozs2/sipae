@@ -39,9 +39,9 @@ test('Busca inclui todas as datas, retorna salas e não modifica a base nem a co
 test('A mesma implementação funciona como módulo CommonJS e script de navegador', () => {
   const context = vm.createContext({});
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'external-booking.js'), 'utf8'), context);
-  assert.equal(typeof context.SIPAE_EXTERNAL_BOOKING.search, 'function');
-  assert.equal(typeof context.SIPAE_EXTERNAL_BOOKING.confirm, 'function');
-  assert.equal(typeof context.SIPAE_EXTERNAL_BOOKING.cancel, 'function');
+  assert.equal(typeof context.MAPPA_EXTERNAL_BOOKING.search, 'function');
+  assert.equal(typeof context.MAPPA_EXTERNAL_BOOKING.confirm, 'function');
+  assert.equal(typeof context.MAPPA_EXTERNAL_BOOKING.cancel, 'function');
 });
 
 test('A confirmação direta cria uma ocorrência aprovada por dia com o mesmo grupo', () => {

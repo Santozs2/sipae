@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const S = SIPAE, { esc, icon } = S.U;
+  const S = MAPPA, { esc, icon } = S.U;
   const photos = new Map();
   const mayEdit = (room) => !!room && ['diretor','coordenador'].includes(S.state.role);
   function illustration(room) {

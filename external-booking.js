@@ -3,7 +3,7 @@
   "use strict";
   const api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
-  root.SIPAE_EXTERNAL_BOOKING = api;
+  root.MAPPA_EXTERNAL_BOOKING = api;
 })(globalThis, function () {
   "use strict";
   const DAY = 86400000;
