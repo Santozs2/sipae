@@ -1,853 +1,1636 @@
-/* Mappa — dados fictícios e determinísticos. Nenhuma informação pessoal real. */
-(function (global) {
-  "use strict";
-  // Estes grupos privados só organizam as fixtures de aulas por afinidade.
-  // Não representam áreas do sistema: o modelo público contém uma única unidade.
-  const fixtureGroups = [
+window.SIPAE_DATA = {
+  "courses": [
     {
-      id: "ti",
-      name: "Tecnologia da Informação",
-      short: "TI",
-      color: "#6686b5",
+      "id": 1,
+      "type": "CAI",
+      "name": "Eletricista Industrial"
     },
     {
-      id: "exatas",
-      name: "Engenharias e Ciências",
-      short: "Exatas",
-      color: "#95a79c",
+      "id": 2,
+      "type": "CAI",
+      "name": "Mecânico de Automóveis Leves"
     },
-    { id: "gestao", name: "Gestão", short: "Gestão", color: "#b4a3bd" },
-  ];
-  const fixtureRooms = [
-    [
-      "ti",
-      "Lab. de Desenvolvimento",
-      "Laboratório de informática",
-      "A",
-      32,
-      "Computadores;Projetor;Internet",
-    ],
-    [
-      "ti",
-      "Lab. de Redes",
-      "Laboratório de informática",
-      "A",
-      24,
-      "Computadores;Racks de rede;Internet",
-    ],
-    [
-      "ti",
-      "Lab. de Sistemas",
-      "Laboratório de informática",
-      "A",
-      28,
-      "Computadores;Projetor;Internet",
-    ],
-    [
-      "ti",
-      "Lab. de Multimídia",
-      "Laboratório de informática",
-      "A",
-      20,
-      "Computadores;Áudio e vídeo;Internet",
-    ],
-    ["ti", "Sala A05", "Sala teórica", "A", 40, "Projetor;Lousa;Internet"],
-    ["ti", "Sala A06", "Sala teórica", "A", 36, "Projetor;Lousa;Internet"],
-    [
-      "exatas",
-      "Oficina de Mecânica",
-      "Oficina de mecânica",
-      "B",
-      30,
-      "Bancadas;Ferramentas;EPIs",
-    ],
-    [
-      "exatas",
-      "Oficina Maker",
-      "Oficina maker",
-      "B",
-      20,
-      "Impressoras 3D;Cortadora a laser;EPIs",
-    ],
-    [
-      "exatas",
-      "Oficina de Prototipagem",
-      "Oficina de prototipagem",
-      "B",
-      24,
-      "Fresadora CNC;Bancadas;EPIs",
-    ],
-    [
-      "exatas",
-      "Lab. de Eletrônica",
-      "Laboratório de eletrônica",
-      "B",
-      28,
-      "Bancadas;Multímetros;Projetor",
-    ],
-    [
-      "exatas",
-      "Lab. de Robótica",
-      "Laboratório de robótica",
-      "B",
-      24,
-      "Kits de robótica;Robôs;Computadores",
-    ],
-    [
-      "exatas",
-      "Lab. de Química",
-      "Laboratório de química",
-      "C",
-      20,
-      "Capela;Vidrarias;EPIs",
-    ],
-    ["exatas", "Sala B07", "Sala teórica", "B", 40, "Projetor;Lousa"],
-    ["exatas", "Sala B08", "Sala teórica", "B", 32, "Projetor;Lousa"],
-    ["gestao", "Sala C01", "Sala teórica", "C", 40, "Projetor;Lousa;Internet"],
-    ["gestao", "Sala C02", "Sala teórica", "C", 30, "Projetor;Lousa;Internet"],
-    [
-      "gestao",
-      "Auditório",
-      "Auditório",
-      "D",
-      120,
-      "Palco;Áudio e vídeo;Projetor",
-    ],
-    [
-      "gestao",
-      "Sala de Reuniões",
-      "Sala de reunião",
-      "D",
-      20,
-      "Videoconferência;Internet;TV",
-    ],
-  ].map((r, i) => ({
-    id: "r" + (i + 1),
-    areaId: r[0],
-    name: r[1],
-    type: r[2],
-    block: r[3],
-    capacity: r[4],
-    resources: r[5].split(";"),
-    status: i === 11 ? "manutencao" : "ativo",
-  }));
-  // O último campo lista as turmas que cada docente pode assumir, de acordo
-  // com a sua especialidade. O gerador da agenda respeita essa restrição.
-  const fixtureTeachers = [
-    ["ti", "Mariana Costa", "Engenharia de software", 20, "c1 c3 c4"],
-    ["ti", "Rafael Almeida", "Redes de computadores", 40, "c2"],
-    ["ti", "Beatriz Nascimento", "Desenvolvimento web", 30, "c3 c6"],
-    ["ti", "Gabriel Oliveira", "Programação e banco de dados", 40, "c3 c5 c6"],
-    ["ti", "Fernanda Ribeiro", "Ciência de dados", 20, "c5"],
-    ["exatas", "André Oliveira", "Engenharia mecânica", 40, "c7 c12"],
-    ["exatas", "Patrícia Santos", "Engenharia elétrica", 30, "c8 c11"],
-    ["exatas", "Bruno Rodrigues", "Fabricação digital", 20, "c9"],
-    ["exatas", "Jéssica Lima", "Robótica", 40, "c11"],
-    ["exatas", "Leandro Souza", "Física", 30, "c10 c12"],
-    ["gestao", "Camila Barros", "Administração", 40, "c13 c16"],
-    ["gestao", "Diego Martins", "Logística", 30, "c14 c15"],
-    ["gestao", "Aline Gomes", "Gestão de projetos", 20, "c16 c13"],
-    ["gestao", "Renato Azevedo", "Empreendedorismo", 20, "c15"],
-  ].map((r, i) => ({
-    id: "t" + (i + 1),
-    areaId: r[0],
-    name: r[1],
-    specialty: r[2],
-    contractHours: r[3],
-    classIds: r[4].split(" "),
-  }));
-  const teaches = (teacher, cls) => teacher.classIds.includes(cls.id);
-  const fixtureClasses = [
-    ["ti", "ESW-01", "Engenharia de Software", "Graduação", "manha", 30],
-    ["ti", "RED-01", "Redes de Computadores", "Graduação", "manha", 24],
-    ["ti", "WEB-01", "Programação Web", "Extensão", "tarde", 18],
-    ["ti", "ESW-02", "Engenharia de Software", "Graduação", "noite", 28],
-    ["ti", "DAD-01", "Ciência de Dados", "Curso livre", "noite", 16],
-    ["ti", "CMP-01", "Computação Aplicada", "Extensão", "noite", 20],
-    ["exatas", "MEC-01", "Engenharia Mecânica", "Graduação", "manha", 26],
-    ["exatas", "ELE-01", "Engenharia Elétrica", "Graduação", "manha", 20],
-    ["exatas", "FAB-01", "Fabricação Digital", "Extensão", "tarde", 18],
-    ["exatas", "FIS-01", "Física Experimental", "Graduação", "tarde", 22],
-    ["exatas", "ROB-01", "Robótica e Controle", "Pós-graduação", "noite", 24],
-    [
-      "exatas",
-      "SEG-01",
-      "Segurança em Laboratórios",
-      "Curso livre",
-      "noite",
-      16,
-    ],
-    ["gestao", "ADM-01", "Administração", "Graduação", "manha", 38],
-    ["gestao", "LOG-01", "Logística", "Graduação", "tarde", 28],
-    ["gestao", "EMP-01", "Empreendedorismo", "Curso livre", "noite", 12],
-    ["gestao", "GPR-01", "Gestão de Projetos", "Pós-graduação", "noite", 26],
-  ].map((r, i) => ({
-    id: "c" + (i + 1),
-    areaId: r[0],
-    code: r[1],
-    name: r[2],
-    modality: r[3],
-    shift: r[4],
-    students: r[5],
-  }));
-  const shifts = [
-    { id: "manha", name: "Manhã", start: 8, end: 12 },
-    { id: "tarde", name: "Tarde", start: 13, end: 17 },
-    { id: "noite", name: "Noite", start: 18, end: 22 },
-  ];
-  const days = ["Seg", "Ter", "Qua", "Qui", "Sex"];
-  const reference = "2026-08-26T12:00:00-03:00";
-  const refusals = [
-    "Indisponibilidade de horário",
-    "Capacidade insuficiente",
-    "Recursos incompatíveis",
-    "Ambiente em manutenção",
-    "Solicitação fora do prazo",
-  ];
-  const kinds = {
-    ambiente: { label: "Sobreposição de ambiente", color: "#cc6978" },
-    docente: { label: "Docente em dois locais", color: "#7795b9" },
-    capacidade: { label: "Capacidade excedida", color: "#b59b75" },
-    manutencao: { label: "Ambiente em manutenção", color: "#a594b7" },
-  };
-  function hash(n) {
-    return (((n * 2654435761) >>> 0) % 1000) / 1000;
-  }
-  function dateString(d) {
-    return d.toISOString().slice(0, 10);
-  }
-  function localDate(d = new Date()) {
-    return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"),
-      String(d.getDate()).padStart(2, "0")].join("-");
-  }
-  function dates(start, end) {
-    const out = [];
-    for (
-      let d = new Date(start + "T12:00:00Z");
-      dateString(d) <= end;
-      d.setUTCDate(d.getUTCDate() + 1)
-    )
-      out.push(dateString(d));
-    return out;
-  }
-  function copyData(value, normalizeScope = false) {
-    if (Array.isArray(value))
-      return value.map((item) => copyData(item, normalizeScope));
-    if (value && typeof value === "object")
-      return Object.fromEntries(Object.entries(value).map(([key, item]) => [
-        key,
-        normalizeScope && key === "areaId" ? "unidade" : copyData(item, normalizeScope),
-      ]));
-    return value;
-  }
-  function makeData() {
-    // Cada geração trabalha em cópias para não alterar os grupos privados nem
-    // reaproveitar cadastros modificados em uma chamada anterior de create().
-    const areas = copyData(fixtureGroups);
-    const rooms = copyData(fixtureRooms);
-    const teachers = copyData(fixtureTeachers);
-    const classes = copyData(fixtureClasses);
-    const template = [];
-    const freeClass = (room, day, shift) =>
-      classes.filter(
-        (c) =>
-          c.areaId === room.areaId &&
-          c.shift === shift &&
-          c.students <= room.capacity &&
-          !template.some(
-            (a) => a.day === day && a.shift === shift && a.classId === c.id,
-          ),
-      );
-    const add = (room, day, shift, forceTeacher) => {
-      if (
-        template.some(
-          (a) => a.roomId === room.id && a.day === day && a.shift === shift,
-        )
-      )
-        return false;
-      const cs = freeClass(room, day, shift);
-      if (!cs.length) return false;
-      const ts = teachers.filter(
-        (t) =>
-          t.areaId === room.areaId &&
-          !template.some(
-            (a) => a.teacherId === t.id && a.day === day && a.shift === shift,
-          ),
-      );
-      if (!ts.length) return false;
-      // Só formam par turma e docente habilitado para ela.
-      let pairs = cs.flatMap((c) => ts.filter((t) => teaches(t, c)).map((t) => [c, t]));
-      if (forceTeacher && pairs.some(([, t]) => t.id === forceTeacher))
-        pairs = pairs.filter(([, t]) => t.id === forceTeacher);
-      if (!pairs.length) return false;
-      const [cls, teacher] = pairs[(day + template.length) % pairs.length];
-      const slot = shifts.find((s) => s.id === shift);
-      template.push({
-        day,
-        shift,
-        roomId: room.id,
-        classId: cls.id,
-        teacherId: teacher.id,
-        areaId: room.areaId,
-        start: slot.start,
-        end: slot.end,
-        status: "confirmada",
-      });
-      return true;
-    };
-    // Os dois ambientes mais disputados ocupam 14 e 13 dos 15 blocos semanais.
-    for (let day = 0; day < 5; day++)
-      for (const s of shifts) {
-        if (!(day === 4 && s.id === "tarde")) add(rooms[0], day, s.id, "t1");
-        if (
-          !(day === 4 && s.id === "tarde") &&
-          !(day === 1 && s.id === "tarde")
-        )
-          add(rooms[6], day, s.id, "t6");
-      }
-    const lowRooms = rooms
-      .filter((r) => r.status === "ativo" && !["r1", "r7"].includes(r.id))
-      .sort((a, b) => a.capacity - b.capacity);
-    lowRooms.forEach((room, ri) => {
-      const count = room.id === "r2" ? 4 : room.id === "r10" ? 3 : 2;
-      const candidateSlots = [];
-      for (const shift of ["noite", "manha", "tarde"])
-        for (let i = 0; i < 5; i++) {
-          const day = (i + ri) % 5;
-          if (!(day === 4 && shift === "tarde"))
-            candidateSlots.push({ day, shift });
-        }
-      let added = 0;
-      for (const slot of candidateSlots) {
-        if (add(room, slot.day, slot.shift) && ++added === count) break;
-      }
-      if (added !== count)
-        throw new Error("Não foi possível construir a agenda de " + room.name);
-    });
-    // Aulas de 3h a 4h diversificam o uso dos ambientes com menor demanda.
-    template.forEach((a, i) => {
-      if (!["r1", "r7"].includes(a.roomId))
-        a.end =
-          a.start + 3 + ((Number(a.roomId.slice(1)) + a.day + i) % 5) * 0.25;
-    });
-    const allocations = [];
-    let sequence = 0;
-    const monthlyFactors = {
-      3: 0.62,
-      4: 0.74,
-      5: 0.83,
-      6: 0.76,
-      7: 0.34,
-      8: 1,
-    };
-    for (const date of dates("2026-03-01", "2026-08-31")) {
-      const d = new Date(date + "T12:00Z"),
-        day = d.getUTCDay() - 1,
-        month = d.getUTCMonth() + 1;
-      if (day < 0 || day > 4) continue;
-      for (let i = 0; i < template.length; i++) {
-        const t = template[i];
-        if (t.day !== day) continue;
-        const keep =
-          month === 8
-            ? date < "2026-08-24"
-              ? hash(i + Math.floor(d.getTime() / 604800000) * 11) > 0.09
-              : true
-            : hash(i + Math.floor(d.getTime() / 604800000) * 17) <
-              monthlyFactors[month];
-        if (keep)
-          allocations.push({
-            ...t,
-            id: "a" + ++sequence,
-            date,
-            source: "planejamento",
-          });
-      }
+    {
+      "id": 3,
+      "type": "CAI",
+      "name": "Mecânico de Manutenção de Máquinas Agrícolas e Veículos Pesados"
+    },
+    {
+      "id": 4,
+      "type": "CAI",
+      "name": "Mecânico de Usinagem"
+    },
+    {
+      "id": 5,
+      "type": "CAI",
+      "name": "Soldador"
+    },
+    {
+      "id": 6,
+      "type": "CT",
+      "name": "Administração"
+    },
+    {
+      "id": 7,
+      "type": "CT",
+      "name": "Desenvolvimento de Sistemas"
+    },
+    {
+      "id": 8,
+      "type": "CT",
+      "name": "Eletroeletrônica"
+    },
+    {
+      "id": 9,
+      "type": "CT",
+      "name": "Eletromecânica"
+    },
+    {
+      "id": 10,
+      "type": "CT",
+      "name": "Mecatrônica"
     }
-    const requests = [];
-    let reqSeq = 0;
-    // Solicitações históricas aprovadas se vinculam a alocações confirmadas existentes.
-    for (let month = 3; month <= 8; month++)
-      for (let ai = 0; ai < areas.length; ai++) {
-        const area = areas[ai];
-        const pool = allocations.filter(
-          (a) =>
-            a.areaId === area.id &&
-            Number(a.date.slice(5, 7)) === month &&
-            a.date <= "2026-08-26",
-        );
-        const count = Math.min(35 + ai * 3, pool.length);
-        for (let i = 0; i < count; i++) {
-          const a = pool[Math.floor((i * pool.length) / count)];
-          const rejected =
-            (i + month) % (ai === 0 ? 7 : ai === 1 ? 6 : 4) === 1;
-          const status = rejected
-            ? "recusada"
-            : i % 11 === 2
-              ? "cancelada"
-              : "aprovada";
-          const created = new Date(a.date + "T08:00:00-03:00");
-          created.setUTCDate(created.getUTCDate() - 2);
-          const wait =
-            month === 8
-              ? 6 + ai * 5 + ((i * 7) % 21)
-              : month === 7
-                ? 13 + ai * 7 + ((i * 3) % 23)
-                : 10 + ai * 4 + ((i * 5) % 25);
-          const decided = new Date(created.getTime() + wait * 3600000);
-          requests.push({
-            id: "s" + ++reqSeq,
-            areaId: area.id,
-            teacherId: a.teacherId,
-            classId: a.classId,
-            roomId: a.roomId,
-            date: a.date,
-            start: a.start,
-            end: a.end,
-            shift: a.shift,
-            status,
-            createdAt: created.toISOString(),
-            decidedAt: decided.toISOString(),
-            reason:
-              status === "recusada"
-                ? refusals[
-                    [0, 0, 1, 0, 2, 0, 1, 3, 4, 0][(i + ai + month) % 10]
-                  ]
-                : null,
-            allocationId: status === "aprovada" ? a.id : null,
-          });
-        }
-      }
-    const needs = [];
-    const occupied = (roomId, teacherId, classId, date, shift) =>
-      allocations.some(
-        (a) =>
-          a.date === date &&
-          a.shift === shift &&
-          (a.roomId === roomId ||
-            a.teacherId === teacherId ||
-            a.classId === classId),
-      );
-    for (let ai = 0; ai < areas.length; ai++) {
-      const area = areas[ai];
-      const count = ai === 0 ? 3 : 2;
-      for (let n = 0; n < count; n++) {
-        let booking = null;
-        outer: for (const date of [
-          "2026-08-27",
-          "2026-08-28",
-          "2026-08-26",
-          "2026-08-31",
-        ])
-          for (const shift of ["tarde", "manha", "noite"])
-            for (const room of rooms.filter(
-              (r) => r.areaId === area.id && r.status === "ativo",
-            ))
-              for (const cls of classes.filter(
-                (c) =>
-                  c.areaId === area.id &&
-                  c.shift === shift &&
-                  c.students <= room.capacity,
-              ))
-                for (const teacher of teachers.filter(
-                  (t) => t.areaId === area.id && teaches(t, cls),
-                )) {
-                  if (date === "2026-08-26" && shift === "manha") continue;
-                  if (
-                    occupied(room.id, teacher.id, cls.id, date, shift) ||
-                    requests.some(
-                      (r) =>
-                        r.status === "pendente" &&
-                        r.date === date &&
-                        r.shift === shift &&
-                        (r.roomId === room.id ||
-                          r.teacherId === teacher.id ||
-                          r.classId === cls.id),
-                    )
-                  )
-                    continue;
-                  const s = shifts.find((s) => s.id === shift);
-                  booking = {
-                    areaId: area.id,
-                    roomId: room.id,
-                    teacherId: teacher.id,
-                    classId: cls.id,
-                    date,
-                    shift,
-                    start: s.start,
-                    end: s.end,
-                  };
-                  break outer;
-                }
-        if (!booking) continue;
-        const createdAt = new Date(
-          new Date(reference).getTime() -
-            (ai === 0 ? [62, 28, 9][n] : 18 + n * 8) * 3600000,
-        ).toISOString();
-        const request = {
-          ...booking,
-          id: "s" + ++reqSeq,
-          status: "pendente",
-          createdAt,
-          decidedAt: null,
-          reason: null,
-        };
-        requests.push(request);
-        if (n < 2) {
-          const need = {
-            id: "need-" + request.id,
-            classId: request.classId,
-            areaId: area.id,
-            date: request.date,
-            shift: request.shift,
-            roomId: null,
-            requestId: request.id,
-          };
-          needs.push(need);
-          request.needId = need.id;
-        }
-      }
+  ],
+  "teachers": [
+    {
+      "id": 1,
+      "name": "MARIA LUIZA PEREIRA BELLO",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 2,
+      "name": "JOAO MACIEL RAMOS",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 3,
+      "name": "WELCIO VITOR BASTOS",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 4,
+      "name": "HUMBERTO NOGUEIRA RODRIGUES",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 5,
+      "name": "VANDA PERPETUO PELACANI COSEQUI",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 6,
+      "name": "ISMAEL DE OLIVEIRA",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 7,
+      "name": "MARLON ANDRE PONTEL GENOVA",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 8,
+      "name": "JOSE HENRIQUE DA CRUZ",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 9,
+      "name": "MARCIO RIBEIRO DE SOUZA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 10,
+      "name": "EVERTON FERNANDO DA SILVA CARDENAS",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 11,
+      "name": "EMERSON MARCELO DA SILVA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 12,
+      "name": "VILSON DA ROCHA PINA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 13,
+      "name": "RODRIGO DA SILVA GARCIA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 14,
+      "name": "REGINA ROBLES PASCHOAL",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 15,
+      "name": "TAIS GUZZO VENTURA LIMA HABER",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 16,
+      "name": "LEANDRO SOARES DOS SANTOS",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 17,
+      "name": "ROBERTO AVEIRO",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 18,
+      "name": "ELVIS SANTOS GARCIA",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 19,
+      "name": "ROGERIO SABADIN BAZAN",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 20,
+      "name": "DANIEL MEIRELES DO REGO",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 21,
+      "name": "TIAGO LINO PEREIRA",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 22,
+      "name": "DANILO JOSE DE MATTOS PETINELLI",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 23,
+      "name": "NATHAN DE MATOS ONHA FERREIRA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 24,
+      "name": "RAFAEL GARCIA LOPES",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 25,
+      "name": "BRUNO RIBEIRO SIQUEIRA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 26,
+      "name": "VITOR LEITE DE ALMEIDA",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 27,
+      "name": "LUCAS ANTONIO ALVES DE GODOI",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 28,
+      "name": "RODRIGO ATTIQUE SANTANA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 29,
+      "name": "FELIPE FERNANDES CALIXTO",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 30,
+      "name": "MURILO HENRIQUE COLODETE",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 31,
+      "name": "NATANAEL DOUGLAS HORACIO ALVES",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 32,
+      "name": "THADEU PARAMO MELEIRO",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 33,
+      "name": "ALEXANDRE MENDONCA CINTRA",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 34,
+      "name": "LUCAS LOPES FERREIRA CANDIDO",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 35,
+      "name": "SAULO DE DEUS LOPES",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 36,
+      "name": "JONATAN THIAGO MONTE",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 37,
+      "name": "DEDYLON ANTONIO GARCIA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 38,
+      "name": "MURILO DE SOUZA MATTOS",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 39,
+      "name": "MARCOS MICHEL DE SOUZA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 40,
+      "name": "RODOLFO BARBOSA RODRIGUES",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 41,
+      "name": "PAULO ROBERTO DE BIAGE AZEVEDO",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 42,
+      "name": "FABIANO ASSUNCAO SANTOS",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 43,
+      "name": "JERRY FABIANO SCHUINDT CASIMIRO",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 44,
+      "name": "JOSE PATRICIO DE OLIVEIRA JUNIOR",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 45,
+      "name": "LUANA PEREZ LEAL",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 46,
+      "name": "LEONARDO TRETTEL TILLINGER",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 47,
+      "name": "GUILHERME MANZATO SANTO",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 48,
+      "name": "GUILHERME HENRIQUE GIROLLI",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 49,
+      "name": "ALLAN SANTOS ALVARES DE LIMA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 50,
+      "name": "EDUARDO HENRIQUE DA SILVA",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 51,
+      "name": "DEIVID VICENT DE ALMEIDA COSTA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 52,
+      "name": "EDINELSON BRAZ",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 53,
+      "name": "CELSO ACACIO FILHO",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 54,
+      "name": "ADOIL JOSE DA COSTA JUNIOR",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 55,
+      "name": "LEONARDO LUIZ DA SILVA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 56,
+      "name": "FERNANDO BISPO DOS SANTOS",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 57,
+      "name": "REUESLEI CASSIO FERREIRA DE OLIVEIRA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 58,
+      "name": "JEFERSON FERREIRA DOS SANTOS",
+      "type": "CT",
+      "habilitado": 1
+    },
+    {
+      "id": 59,
+      "name": "WILSON QUEIROZ RIBEIRO",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 60,
+      "name": "RAFHAEL RODRIGO DOS SANTOS",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 61,
+      "name": "JOSE ALBERTO CORREA DE SOUZA FILHO",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 62,
+      "name": "RICARDO DELGADO DE SOUZA",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 63,
+      "name": "ANDRE LUIS BORSATO SANCHEZ",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 64,
+      "name": "RIRLEY AUGUSTO NERY EVANGELISTA",
+      "type": "CAI",
+      "habilitado": 1
+    },
+    {
+      "id": 65,
+      "name": "SAMUEL HONORATO",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 66,
+      "name": "ELIAS HENRIQUE FUSTER FUENTEALBA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 67,
+      "name": "PEDRO COLTRO DO CARMO",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 68,
+      "name": "JULIA NOSKI RIBEIRO",
+      "type": "CT",
+      "habilitado": 0
+    },
+    {
+      "id": 69,
+      "name": "ERIK ESTEVAN ANDRADE DOS SANTOS",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 70,
+      "name": "JOAO LUIS BURLINA",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 71,
+      "name": "SUELI DA SILVA REZENDE NASCIMENTO",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 72,
+      "name": "ALDELEIA GARCIA FRASONI",
+      "type": "CAI",
+      "habilitado": 0
+    },
+    {
+      "id": 73,
+      "name": "BERNARDO",
+      "type": "CT",
+      "habilitado": 0
     }
-    const activeConflicts = [];
-    const week = allocations.filter(
-      (a) => a.date >= "2026-08-24" && a.date <= "2026-08-28",
-    );
-    const base =
-      week.find((a) => a.areaId === "ti" && a.date === "2026-08-26") ||
-      week.find((a) => a.areaId === "ti");
-    activeConflicts.push({
-      id: "cf-ambiente",
-      areaId: "ti",
-      kind: "ambiente",
-      status: "ativo",
-      date: base.date,
-      shift: base.shift,
-      teacherId: base.teacherId,
-      roomId: base.roomId,
-      classId: base.classId,
-      allocationId: base.id,
-      title: "Duas reservas para o mesmo ambiente",
-      detail:
-        "Uma solicitação adicional coincide com a reserva de " +
-        rooms.find((r) => r.id === base.roomId).name +
-        ".",
-      detectedAt: "2026-08-24T09:00:00-03:00",
-    });
-    const second =
-      week.find((a) => a.areaId === "ti" && a.date === "2026-08-27") || base;
-    activeConflicts.push({
-      id: "cf-docente",
-      areaId: "ti",
-      kind: "docente",
-      status: "ativo",
-      date: second.date,
-      shift: second.shift,
-      teacherId: second.teacherId,
-      roomId: second.roomId,
-      classId: second.classId,
-      allocationId: second.id,
-      title: "Docente com horários sobrepostos",
-      detail:
-        teachers.find((t) => t.id === second.teacherId).name +
-        " foi solicitado em dois ambientes no mesmo turno.",
-      detectedAt: "2026-08-25T10:00:00-03:00",
-    });
-    activeConflicts.push({
-      id: "cf-capacidade",
-      areaId: "gestao",
-      kind: "capacidade",
-      status: "ativo",
-      date: "2026-08-27",
-      shift: "manha",
-      teacherId: "t11",
-      roomId: "r16",
-      classId: "c13",
-      title: "Turma maior que a capacidade",
-      detail: "ADM-01: 38 alunos para 30 lugares na Sala C02.",
-      detectedAt: "2026-08-25T11:00:00-03:00",
-    });
-    activeConflicts.push({
-      id: "cf-manutencao",
-      areaId: "exatas",
-      kind: "manutencao",
-      status: "ativo",
-      date: "2026-08-28",
-      shift: "tarde",
-      teacherId: "t7",
-      roomId: "r12",
-      classId: "c8",
-      title: "Reserva em ambiente em manutenção",
-      detail:
-        "O Lab. de Química está indisponível para revisão da capela de exaustão.",
-      detectedAt: "2026-08-24T14:00:00-03:00",
-    });
-    const conflicts = [...activeConflicts];
-    let cseq = 0;
-    for (let month = 3; month <= 8; month++)
-      for (let ai = 0; ai < 3; ai++)
-        for (let n = 0; n < 6 + ai; n++) {
-          const day = 3 + n * 3;
-          const date =
-            "2026-" +
-            String(month).padStart(2, "0") +
-            "-" +
-            String(day).padStart(2, "0");
-          conflicts.push({
-            id: "hc" + ++cseq,
-            areaId: areas[ai].id,
-            kind: Object.keys(kinds)[(n + ai + month) % 4],
-            status: "resolvido",
-            date,
-            shift: shifts[n % 3].id,
-            teacherId: teachers.filter((t) => t.areaId === areas[ai].id)[
-              n % teachers.filter((t) => t.areaId === areas[ai].id).length
-            ].id,
-            detectedAt: date + "T09:00:00-03:00",
-            resolvedAt: date + "T16:00:00-03:00",
-          });
-        }
-    const externalReservations = [
-      {
-        id: "ext-01",
-        organization: "Associação Comercial e Empresarial",
-        contact: "eventos@example.org",
-        roomId: "r17",
-        areaId: "gestao",
-        date: "2026-08-28",
-        start: 13,
-        end: 16,
-        shift: "tarde",
-        purpose: "Encontro de inovação e desenvolvimento regional",
-        attendees: 70,
-        status: "pendente",
-        priority: "normal",
-      },
-      {
-        id: "ext-02",
-        organization: "Núcleo de Empreendedores",
-        contact: "contato@example.org",
-        roomId: "r18",
-        areaId: "gestao",
-        date: "2026-08-27",
-        start: 8,
-        end: 11,
-        shift: "manha",
-        purpose: "Mentoria de novos negócios",
-        attendees: 16,
-        status: "aprovada",
-        priority: "normal",
-      },
-      {
-        id: "ext-03",
-        organization: "Fórum de Educação e Inovação",
-        contact: "forum@example.org",
-        roomId: "r17",
-        areaId: "gestao",
-        date: "2026-08-31",
-        start: 13,
-        end: 17,
-        shift: "tarde",
-        purpose: "Formação de educadores",
-        attendees: 80,
-        status: "aprovada",
-        priority: "normal",
-      },
-      {
-        id: "ext-04",
-        organization: "Coletivo de Tecnologia",
-        contact: "coletivo@example.org",
-        roomId: "r4",
-        areaId: "ti",
-        date: "2026-08-28",
-        start: 18,
-        end: 21,
-        shift: "noite",
-        purpose: "Oficina de produção audiovisual",
-        attendees: 35,
-        status: "recusada",
-        priority: "normal",
-        reason: "Capacidade insuficiente",
-      },
-      {
-        id: "ext-05",
-        organization: "Rede de Economia Criativa",
-        contact: "rede@example.org",
-        roomId: "r18",
-        areaId: "gestao",
-        date: "2026-08-25",
-        start: 13,
-        end: 15,
-        shift: "tarde",
-        purpose: "Reunião de planejamento",
-        attendees: 12,
-        status: "cancelada",
-        priority: "normal",
-      },
-    ];
-    teachers.forEach((t, i) =>
-      Object.assign(t, {
-        email: "docente" + (i + 1) + "@example.org",
-        phone: "(00) 0000-0000",
-        nif: String(100001 + i),
-        status: "ativo",
-        disciplines: [t.specialty],
-        defaultRoomId: "",
-        schedule: "integral",
-      }),
-    );
-    rooms.forEach((r) =>
-      Object.assign(r, {
-        workingDays: [1, 2, 3, 4, 5],
-        externalBlocked: r.id === "r1" || r.id === "r11",
-        responsible: "Coordenação da unidade",
-        notes: "",
-      }),
-    );
-    // A base acompanha a semana de acesso, preservando os dias úteis do exemplo.
-    const now = new Date();
-    const today = localDate(now);
-    const monday = new Date(today + "T12:00:00Z");
-    monday.setUTCDate(monday.getUTCDate() - (monday.getUTCDay() + 6) % 7);
-    const offset = monday.getTime() - new Date("2026-08-24T12:00:00Z").getTime();
-    for (const record of [...allocations, ...requests, ...needs, ...conflicts, ...externalReservations]) {
-      if (record.date) record.date = dateString(new Date(new Date(record.date + "T12:00:00Z").getTime() + offset));
-      for (const key of ["createdAt", "decidedAt", "detectedAt", "resolvedAt"]) {
-        if (record[key]) record[key] = new Date(new Date(record[key]).getTime() + offset).toISOString();
-      }
+  ],
+  "units": [
+    {
+      "id": "c6-r3",
+      "courseId": 6,
+      "name": "Linguagens em Multimeios",
+      "semesters": [
+        1
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c6-r4",
+      "courseId": 6,
+      "name": "Organização e Estrutura Empresarial",
+      "semesters": [
+        1,
+        2
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c6-r5",
+      "courseId": 6,
+      "name": "Ferramentas Digitais para o Mercado de Trabalho",
+      "semesters": [
+        1
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c6-r6",
+      "courseId": 6,
+      "name": "Performance Pessoal e Profissional",
+      "semesters": [
+        1
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c6-r7",
+      "courseId": 6,
+      "name": "Tendências e Inovações",
+      "semesters": [
+        4
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c6-r8",
+      "courseId": 6,
+      "name": "Comunicação Estratégica Corporativa",
+      "semesters": [
+        1,
+        2
+      ],
+      "hours": 150
+    },
+    {
+      "id": "c6-r9",
+      "courseId": 6,
+      "name": "Capital Humano e Desenvolvimento de Talentos",
+      "semesters": [
+        2,
+        3
+      ],
+      "hours": 195
+    },
+    {
+      "id": "c6-r10",
+      "courseId": 6,
+      "name": "Finanças Integradas",
+      "semesters": [
+        3,
+        4
+      ],
+      "hours": 180
+    },
+    {
+      "id": "c6-r11",
+      "courseId": 6,
+      "name": "Logística Integrada e Sustentável",
+      "semesters": [
+        2,
+        3
+      ],
+      "hours": 150
+    },
+    {
+      "id": "c6-r12",
+      "courseId": 6,
+      "name": "Aprimoramento de Processos",
+      "semesters": [
+        3,
+        4
+      ],
+      "hours": 195
+    },
+    {
+      "id": "c7-r18",
+      "courseId": 7,
+      "name": "Fundamentos de Programação Orientada a Objeto",
+      "semesters": [
+        1,
+        2
+      ],
+      "hours": 180
+    },
+    {
+      "id": "c7-r19",
+      "courseId": 7,
+      "name": "Sistemas Operacionais",
+      "semesters": [
+        1
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c7-r20",
+      "courseId": 7,
+      "name": "Hardware e Redes",
+      "semesters": [
+        1
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c7-r21",
+      "courseId": 7,
+      "name": "Linguagem de Marcação",
+      "semesters": [
+        1
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c7-r22",
+      "courseId": 7,
+      "name": "Programação Web Front-End",
+      "semesters": [
+        2
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c7-r23",
+      "courseId": 7,
+      "name": "Banco de Dados",
+      "semesters": [
+        3
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c7-r24",
+      "courseId": 7,
+      "name": "Programação Web Back-End",
+      "semesters": [
+        2,
+        3
+      ],
+      "hours": 180
+    },
+    {
+      "id": "c7-r25",
+      "courseId": 7,
+      "name": "Interface para Dispositivos Móveis",
+      "semesters": [
+        3
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c7-r26",
+      "courseId": 7,
+      "name": "Programação para Dispositivos Móveis",
+      "semesters": [
+        3
+      ],
+      "hours": 90
+    },
+    {
+      "id": "c7-r27",
+      "courseId": 7,
+      "name": "Requisitos e Modelagem de Software",
+      "semesters": [
+        4
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c7-r28",
+      "courseId": 7,
+      "name": "Testes de Software",
+      "semesters": [
+        4
+      ],
+      "hours": 30
+    },
+    {
+      "id": "c7-r29",
+      "courseId": 7,
+      "name": "Projetos",
+      "semesters": [
+        4
+      ],
+      "hours": 225
+    },
+    {
+      "id": "c8-r35",
+      "courseId": 8,
+      "name": "Fundamentos da Eletroeletrônica",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c8-r36",
+      "courseId": 8,
+      "name": "Ferramentas Digitais para o Mercado de Trabalho",
+      "semesters": [
+        1
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c8-r37",
+      "courseId": 8,
+      "name": "Implementação de Sistemas Eletroeletrônicos Prediais",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c8-r38",
+      "courseId": 8,
+      "name": "Linguagens em Multimeios",
+      "semesters": [
+        2
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c8-r39",
+      "courseId": 8,
+      "name": "Performance Pessoal e Profissional",
+      "semesters": [
+        2
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c8-r40",
+      "courseId": 8,
+      "name": "Implementação de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        2
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c8-r41",
+      "courseId": 8,
+      "name": "Implementação de Sistemas Eletrônicos Industriais",
+      "semesters": [
+        2
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c8-r42",
+      "courseId": 8,
+      "name": "Processos de Implementação de Sistemas Eletroeletrônicos",
+      "semesters": [
+        3
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c8-r43",
+      "courseId": 8,
+      "name": "Manutenção de Sistemas Eletroeletrônicos Prediais",
+      "semesters": [
+        3
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c8-r44",
+      "courseId": 8,
+      "name": "Manutenção de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        3
+      ],
+      "hours": 90
+    },
+    {
+      "id": "c8-r45",
+      "courseId": 8,
+      "name": "Manutenção de Sistemas Eletrônicos Industriais",
+      "semesters": [
+        3
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c8-r46",
+      "courseId": 8,
+      "name": "Supervisão da Manutenção de Sistemas Eletroeletrônicos",
+      "semesters": [
+        3
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c8-r47",
+      "courseId": 8,
+      "name": "Projeto de Sistemas Eletroeletrônicos Prediais",
+      "semesters": [
+        4
+      ],
+      "hours": 90
+    },
+    {
+      "id": "c8-r48",
+      "courseId": 8,
+      "name": "Projeto de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        4
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c8-r49",
+      "courseId": 8,
+      "name": "Projeto de Circuitos Eletrônicos Industriais",
+      "semesters": [
+        4
+      ],
+      "hours": 90
+    },
+    {
+      "id": "c9-r55",
+      "courseId": 9,
+      "name": "Leitura e interpretação de desenho técnico",
+      "semesters": [
+        1
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c9-r56",
+      "courseId": 9,
+      "name": "Controle dimensional",
+      "semesters": [
+        1
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c9-r57",
+      "courseId": 9,
+      "name": "Cálculo técnico",
+      "semesters": [
+        1
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c9-r58",
+      "courseId": 9,
+      "name": "Fundamentos da eletromecânica",
+      "semesters": [
+        1
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c9-r59",
+      "courseId": 9,
+      "name": "Técnicas de usinagem em máquinas convencionais",
+      "semesters": [
+        1
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c9-r60",
+      "courseId": 9,
+      "name": "Fundamentos da hidráulica e pneumática",
+      "semesters": [
+        2
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c9-r61",
+      "courseId": 9,
+      "name": "Sistemas eletroeletrônicos aplicados a eletromecânica",
+      "semesters": [
+        2
+      ],
+      "hours": 105
+    },
+    {
+      "id": "c9-r62",
+      "courseId": 9,
+      "name": "Sistemas mecânicos aplicados a eletromecânica",
+      "semesters": [
+        2
+      ],
+      "hours": 105
+    },
+    {
+      "id": "c9-r63",
+      "courseId": 9,
+      "name": "Gestão de processos da eletromecânica",
+      "semesters": [
+        2
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c9-r64",
+      "courseId": 9,
+      "name": "Linguagem em multimeios",
+      "semesters": [
+        3
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c9-r65",
+      "courseId": 9,
+      "name": "Manufatura digital",
+      "semesters": [
+        3
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c9-r66",
+      "courseId": 9,
+      "name": "Integração de conjuntos eletromecânicos",
+      "semesters": [
+        3
+      ],
+      "hours": 105
+    },
+    {
+      "id": "c9-r67",
+      "courseId": 9,
+      "name": "Automação aplicada a eletromecânica",
+      "semesters": [
+        3
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c9-r68",
+      "courseId": 9,
+      "name": "Ferramentas digitais para o mercado de trabalho",
+      "semesters": [
+        4
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c9-r69",
+      "courseId": 9,
+      "name": "Performance pessoal e profissional",
+      "semesters": [
+        4
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c9-r70",
+      "courseId": 9,
+      "name": "Manutenção de sistemas eletromecânicos",
+      "semesters": [
+        4
+      ],
+      "hours": 105
+    },
+    {
+      "id": "c9-r71",
+      "courseId": 9,
+      "name": "Projetos eletromecânicos",
+      "semesters": [
+        4
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c10-r77",
+      "courseId": 10,
+      "name": "Comunicação em Multimeios",
+      "semesters": [
+        1
+      ],
+      "hours": 45
+    },
+    {
+      "id": "c10-r78",
+      "courseId": 10,
+      "name": "Eletroeletrônica Aplicada a Sistemas Automatizados",
+      "semesters": [
+        1
+      ],
+      "hours": 105
+    },
+    {
+      "id": "c10-r80",
+      "courseId": 10,
+      "name": "Mecânica Aplicada a Sistemas Automatizados",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c10-r81",
+      "courseId": 10,
+      "name": "Lógica de Programação",
+      "semesters": [
+        1
+      ],
+      "hours": 30
+    },
+    {
+      "id": "c10-r82",
+      "courseId": 10,
+      "name": "Sistemas Eletropneumática e Eletrohidráulica",
+      "semesters": [
+        2
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c10-r83",
+      "courseId": 10,
+      "name": "Elementos Eletroeletrônicos e Acionamentos",
+      "semesters": [
+        2
+      ],
+      "hours": 105
+    },
+    {
+      "id": "c10-r84",
+      "courseId": 10,
+      "name": "Processos Mecânicos",
+      "semesters": [
+        2
+      ],
+      "hours": 75
+    },
+    {
+      "id": "c10-r85",
+      "courseId": 10,
+      "name": "Controladores Lógicos Programáveis",
+      "semesters": [
+        3
+      ],
+      "hours": 150
+    },
+    {
+      "id": "c10-r86",
+      "courseId": 10,
+      "name": "Sistemas Embarcados",
+      "semesters": [
+        2,
+        3
+      ],
+      "hours": 135
+    },
+    {
+      "id": "c10-r87",
+      "courseId": 10,
+      "name": "Tecnologia de Produção Mecânica",
+      "semesters": [
+        3
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c10-r88",
+      "courseId": 10,
+      "name": "Integração de Sistemas Automatizados",
+      "semesters": [
+        4
+      ],
+      "hours": 150
+    },
+    {
+      "id": "c10-r89",
+      "courseId": 10,
+      "name": "Gestão da Manutenção de Sistemas Mecatrônicos",
+      "semesters": [
+        4
+      ],
+      "hours": 60
+    },
+    {
+      "id": "c10-r90",
+      "courseId": 10,
+      "name": "Projetos Mecatrônicos",
+      "semesters": [
+        4
+      ],
+      "hours": 90
+    },
+    {
+      "id": "c2-r3",
+      "courseId": 2,
+      "name": "Letramento Digital",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c2-r4",
+      "courseId": 2,
+      "name": "Fundamentos da Mecânica Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c2-r5",
+      "courseId": 2,
+      "name": "Cálculos Aplicados à Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c2-r6",
+      "courseId": 2,
+      "name": "Fundamentos da Eletroeletrônica Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c2-r7",
+      "courseId": 2,
+      "name": "Processos de Soldagem Aplicados à Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c2-r8",
+      "courseId": 2,
+      "name": "Desenvolvimento Profissional e Comunicação",
+      "semesters": [
+        2
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c2-r9",
+      "courseId": 2,
+      "name": "Manutenção em Sistemas de Suspensão, Direção e Freios de Veículos Leves",
+      "semesters": [
+        2
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c2-r10",
+      "courseId": 2,
+      "name": "Manutenção em Sistemas de Carga e Partida de Veículos Leves",
+      "semesters": [
+        2
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c2-r11",
+      "courseId": 2,
+      "name": "Manutenção em Sistemas de Sinalização e Iluminação de Veículos Leves",
+      "semesters": [
+        2
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c2-r12",
+      "courseId": 2,
+      "name": "Manutenção em Sistemas Eletroeletrônicos Embarcados de Veículos Leves",
+      "semesters": [
+        2,
+        3
+      ],
+      "hours": 200
+    },
+    {
+      "id": "c2-r13",
+      "courseId": 2,
+      "name": "Manutenção em Sistema de Climatização de Veículos Leves",
+      "semesters": [
+        3
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c2-r14",
+      "courseId": 2,
+      "name": "Manutenção em Sistema de Transmissão Mecânica de Veículos Leves",
+      "semesters": [
+        3
+      ],
+      "hours": 200
+    },
+    {
+      "id": "c2-r15",
+      "courseId": 2,
+      "name": "Manutenção em Sistemas Mecânicos de Motores Ciclo Otto",
+      "semesters": [
+        4
+      ],
+      "hours": 240
+    },
+    {
+      "id": "c2-r16",
+      "courseId": 2,
+      "name": "Manutenção em Sistemas de Gerenciamento Eletrônico do Motor de Veículos Leves",
+      "semesters": [
+        4
+      ],
+      "hours": 160
+    },
+    {
+      "id": "c1-r22",
+      "courseId": 1,
+      "name": "Desenvolvimento Profissional e Comunicação",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c1-r23",
+      "courseId": 1,
+      "name": "Letramento Digital",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c1-r24",
+      "courseId": 1,
+      "name": "Fundamentos da Eletroeletrônica",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c1-r25",
+      "courseId": 1,
+      "name": "Fundamentos de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c1-r26",
+      "courseId": 1,
+      "name": "Montagem de Infraestrutura Eletroeletrônica",
+      "semesters": [
+        2
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c1-r27",
+      "courseId": 1,
+      "name": "Montagem e Instalação de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        2
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c1-r28",
+      "courseId": 1,
+      "name": "Integração de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        2
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c1-r29",
+      "courseId": 1,
+      "name": "Manutenção e Controle de Sistemas Eletroeletrônicos Industriais",
+      "semesters": [
+        2
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c3-r35",
+      "courseId": 3,
+      "name": "Fundamentos da Mecânica Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 120
+    },
+    {
+      "id": "c3-r36",
+      "courseId": 3,
+      "name": "Fundamentos da Eletroeletrônica Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c3-r37",
+      "courseId": 3,
+      "name": "Cálculos Aplicados à Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c3-r38",
+      "courseId": 3,
+      "name": "Letramento Digital",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c3-r39",
+      "courseId": 3,
+      "name": "Processos de Soldagem Aplicados à Automotiva",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c3-r40",
+      "courseId": 3,
+      "name": "Desenvolvimento Profissional e Comunicação",
+      "semesters": [
+        2
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c3-r41",
+      "courseId": 3,
+      "name": "Hidráulica Móbil",
+      "semesters": [
+        2
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c3-r42",
+      "courseId": 3,
+      "name": "Manutenção em Sistemas de Suspensão, Direção e Freios de Máquinas Agrícolas e Veículos Pesados",
+      "semesters": [
+        2
+      ],
+      "hours": 240
+    },
+    {
+      "id": "c3-r43",
+      "courseId": 3,
+      "name": "Manutenção em Sistemas de Transmissão de Máquinas Agrícolas e Veículos Pesados",
+      "semesters": [
+        3
+      ],
+      "hours": 200
+    },
+    {
+      "id": "c3-r44",
+      "courseId": 3,
+      "name": "Manutenção em Sistemas Hidráulicos e Implementos de Tratores e Colhedoras",
+      "semesters": [
+        3
+      ],
+      "hours": 160
+    },
+    {
+      "id": "c3-r45",
+      "courseId": 3,
+      "name": "Manutenção em Motores de Máquinas Agrícolas e Veículos Pesados",
+      "semesters": [
+        3,
+        4
+      ],
+      "hours": 200
+    },
+    {
+      "id": "c3-r46",
+      "courseId": 3,
+      "name": "Manutenção em Sistemas Eletroeletrônicos de Máquinas Agrícolas e Veículos Pesados",
+      "semesters": [
+        4
+      ],
+      "hours": 240
+    },
+    {
+      "id": "c5-r52",
+      "courseId": 5,
+      "name": "Desenvolvimento Pessoal e Comunicação",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c5-r53",
+      "courseId": 5,
+      "name": "Letramento Digital",
+      "semesters": [
+        1
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c5-r54",
+      "courseId": 5,
+      "name": "Leitura e Interpretação de Desenho Técnico",
+      "semesters": [
+        1
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c5-r55",
+      "courseId": 5,
+      "name": "Ciências Aplicadas",
+      "semesters": [
+        1
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c5-r56",
+      "courseId": 5,
+      "name": "Fundamentos de Soldagem",
+      "semesters": [
+        1
+      ],
+      "hours": 160
+    },
+    {
+      "id": "c5-r57",
+      "courseId": 5,
+      "name": "Processos Manuais de Soldagem",
+      "semesters": [
+        2
+      ],
+      "hours": 160
+    },
+    {
+      "id": "c5-r58",
+      "courseId": 5,
+      "name": "Processos Semiautomáticos de Soldagem",
+      "semesters": [
+        2
+      ],
+      "hours": 160
+    },
+    {
+      "id": "c5-r59",
+      "courseId": 5,
+      "name": "Soldagem Robotizada",
+      "semesters": [
+        2
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c5-r60",
+      "courseId": 5,
+      "name": "Controle de Qualidade",
+      "semesters": [
+        2
+      ],
+      "hours": 40
+    },
+    {
+      "id": "c4-r71",
+      "courseId": 4,
+      "name": "Controle Dimensional",
+      "semesters": [
+        3
+      ],
+      "hours": 80
+    },
+    {
+      "id": "c4-r72",
+      "courseId": 4,
+      "name": "Usinagem em Máquinas Convencionais",
+      "semesters": [
+        3,
+        4
+      ],
+      "hours": 400
+    },
+    {
+      "id": "c4-r73",
+      "courseId": 4,
+      "name": "Usinagem em Máquinas a CNC",
+      "semesters": [
+        3,
+        4
+      ],
+      "hours": 320
     }
-    // Reservas internas são confirmadas ao agendar; não existe etapa de aprovação.
-    const slotIsFree = (r) => ![...allocations.filter((a) => a.status === "confirmada"),
-      ...externalReservations.filter((a) => a.status === "aprovada")].some((a) =>
-      a.date === r.date && a.start < r.end && r.start < a.end &&
-      (a.roomId === r.roomId || a.teacherId === r.teacherId || a.classId === r.classId));
-    for (const r of requests) {
-      if (r.status === "aprovada") r.status = "confirmada";
-      if (r.status === "pendente") {
-        if (slotIsFree(r)) {
-          r.status = "confirmada";
-          r.allocationId = "agendamento-" + r.id;
-          allocations.push({ ...r, id: r.allocationId, source: "agendamento" });
-          const need = needs.find((n) => n.id === r.needId);
-          if (need) need.roomId = r.roomId;
-        } else r.status = "cancelada";
-      }
-      if (r.status === "recusada") r.status = "cancelada";
-      r.reason = r.status === "cancelada" ? "Agendamento cancelado na demonstração." : null;
-      r.decidedAt = r.createdAt;
+  ],
+  "environments": [
+    {
+      "id": 1,
+      "name": "Metrologia"
+    },
+    {
+      "id": 2,
+      "name": "Costura"
+    },
+    {
+      "id": 3,
+      "name": "C1"
+    },
+    {
+      "id": 4,
+      "name": "C2"
+    },
+    {
+      "id": 5,
+      "name": "C3"
+    },
+    {
+      "id": 6,
+      "name": "C4"
+    },
+    {
+      "id": 7,
+      "name": "C5"
+    },
+    {
+      "id": 8,
+      "name": "Automação Residencial"
+    },
+    {
+      "id": 9,
+      "name": "Máquinas Elétricas"
+    },
+    {
+      "id": 10,
+      "name": "CLP"
+    },
+    {
+      "id": 11,
+      "name": "Automação"
+    },
+    {
+      "id": 12,
+      "name": "TI1"
+    },
+    {
+      "id": 13,
+      "name": "TI1 e TI2"
+    },
+    {
+      "id": 14,
+      "name": "TI2"
+    },
+    {
+      "id": 15,
+      "name": "TI3"
+    },
+    {
+      "id": 16,
+      "name": "Simulador Solda"
+    },
+    {
+      "id": 17,
+      "name": "Robotica"
+    },
+    {
+      "id": 18,
+      "name": "Redes"
+    },
+    {
+      "id": 19,
+      "name": "Oficina Ar Condicionado"
+    },
+    {
+      "id": 20,
+      "name": "Oficina Instalações Elétricas 01"
+    },
+    {
+      "id": 21,
+      "name": "Oficina Instalações Elétricas 02"
+    },
+    {
+      "id": 22,
+      "name": "Oficina Soldagem"
+    },
+    {
+      "id": 23,
+      "name": "Oficina Tornearia"
+    },
+    {
+      "id": 24,
+      "name": "Oficina Ajustagem"
+    },
+    {
+      "id": 25,
+      "name": "Oficina CNC"
+    },
+    {
+      "id": 26,
+      "name": "Oficina Leves"
+    },
+    {
+      "id": 27,
+      "name": "Oficina Pesados"
     }
-    // As propostas fictícias de conflito não fazem parte do novo fluxo.
-    conflicts.length = 0;
-    // Algumas aulas futuras do docente, sempre em horários livres e com capacidade válida.
-    let nextLesson = 0;
-    for (let dayOffset = 1; dayOffset <= 14 && nextLesson < 5; dayOffset++) {
-      const day = new Date(today + "T12:00:00Z");
-      day.setUTCDate(day.getUTCDate() + dayOffset);
-      if ([0, 6].includes(day.getUTCDay())) continue;
-      const classId = ["c3", "c5", "c6"][nextLesson % 3];
-      const group = classes.find((c) => c.id === classId);
-      const slot = shifts.find((s) => s.id === group.shift);
-      for (const target of rooms.filter((r) => r.areaId === "ti" && r.status === "ativo" && r.capacity >= group.students)) {
-        const lesson = { id: "demo-proxima-" + nextLesson, areaId: "ti", roomId: target.id,
-          teacherId: "t4", classId, date: dateString(day), shift: slot.id, start: slot.start,
-          end: slot.start + 2, status: "confirmada", source: "demonstracao", note: "Aula demonstrativa." };
-        if (!slotIsFree(lesson)) continue;
-        allocations.push(lesson);
-        requests.push({ ...lesson, id: "registro-" + lesson.id, allocationId: lesson.id,
-          createdAt: now.toISOString(), decidedAt: now.toISOString() });
-        nextLesson++;
-        break;
-      }
-    }
-    // Créditos mensais fixados ao preparar a demonstração; as operações nunca ampliam a cota.
-    // Cada turma tem uma disciplina coerente com o seu curso.
-    const subjectNames = {
-      c1: "Engenharia de Requisitos",
-      c2: "Redes de Computadores",
-      c3: "Desenvolvimento Web",
-      c4: "Arquitetura de Software",
-      c5: "Banco de Dados",
-      c6: "Lógica de Programação",
-      c7: "Resistência dos Materiais",
-      c8: "Circuitos Elétricos",
-      c9: "Impressão 3D e Prototipagem",
-      c10: "Laboratório de Física",
-      c11: "Sistemas de Controle",
-      c12: "Segurança em Laboratórios",
-      c13: "Teoria Geral da Administração",
-      c14: "Cadeia de Suprimentos",
-      c15: "Plano de Negócios",
-      c16: "Gestão Ágil de Projetos",
-    };
-    const teacherSubjects = [];
-    for (const t of teachers) {
-      const records = [...allocations, ...requests].filter(
-        (a) => a.teacherId === t.id,
-      );
-      // Disciplinas do docente: as das turmas que ele pode assumir.
-      const names = [
-        ...new Set([
-          ...records.map((a) => subjectNames[a.classId] || t.specialty),
-          ...t.classIds.map((id) => subjectNames[id]),
-        ]),
-      ];
-      if (t.id === "t4" && !names.includes("Banco de Dados"))
-        names.push("Banco de Dados");
-      names.forEach((name, i) => {
-        const id = t.id + "-disciplina-" + i;
-        const selected = records.filter(
-          (a) => (subjectNames[a.classId] || t.specialty) === name,
-        );
-        selected.forEach((a) => {
-          a.disciplineId = id;
-          a.subject = name;
-        });
-        const monthly = {};
-        [...allocations, ...requests.filter((r) => r.status === "pendente")]
-          .filter((a) => a.disciplineId === id)
-          .forEach((a) => {
-            const month = a.date.slice(0, 7);
-            monthly[month] = (monthly[month] || 0) + a.end - a.start;
-          });
-        teacherSubjects.push({
-          id,
-          teacherId: t.id,
-          name,
-          monthlyHours: Math.max(
-            15,
-            Math.ceil(Math.max(0, ...Object.values(monthly)) / 15) * 15,
-          ),
-        });
-      });
-      t.disciplines = names;
-    }
-    const instance = {
-      managementProfiles: {
-        coordenador: { name: "Helena Duarte", email: "coordenacao@example.org", phone: "(00) 0000-0000",
-          nif: "100015", roleLabel: "Coordenação", areaLabel: "Unidade" },
-        diretor: { name: "Ricardo Moreira", email: "direcao@example.org", phone: "(00) 0000-0000",
-          nif: "100016", roleLabel: "Direção da unidade", areaLabel: "Unidade" },
-      },
-      teacherSubjects,
-      externalReservations,
-      areas: [{ id: "unidade", name: "Unidade", short: "Unidade", color: "#6686b5" }],
-      rooms,
-      teachers,
-      classes,
-      shifts,
-      days,
-      reference: now.toISOString(),
-      today,
-      refusals,
-      kinds,
-      allocations,
-      requests,
-      conflicts,
-      needs,
-      template,
-    };
-    // A normalização pública preserva aulas, referências e datas; os identificadores
-    // de grupos das fixtures nunca ficam expostos como escopo ou permissão.
-    return copyData(instance, true);
-  }
-  global.MAPPA_DATA = { create: makeData, dates, dateString, localDate };
-})(globalThis);
+  ]
+};

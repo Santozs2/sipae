@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1140" role="img" aria-labelledby="title description">
+  <title id="title">DER da alocação docente SIPAE</title>
+  <desc id="description">Um professor pode ter muitas alocações. Um curso possui muitas unidades curriculares e alocações. Cada alocação reúne várias unidades curriculares e vários ambientes por meio de duas tabelas associativas.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f6f6f6}.box{fill:#fff;stroke:#dedede;stroke-width:2}.head{fill:#171717}.type{font:700 13px Arial,sans-serif;letter-spacing:2px;fill:#ef7280}.name{font:700 24px Arial,sans-serif;fill:#fff}.attr{font:16px Arial,sans-serif;fill:#333}.pk,.fk{font:700 15px Arial,sans-serif;fill:#b51c2d}.line{fill:none;stroke:#c51f32;stroke-width:3}.mark{font:700 18px Arial,sans-serif;fill:#a21627}.title{font:700 33px Arial,sans-serif;fill:#171717}.sub{font:16px Arial,sans-serif;fill:#666}.note{font:14px Arial,sans-serif;fill:#555}
+    </style>
+  </defs>
+  <rect class="bg" width="1400" height="1140"/>
+  <text x="50" y="62" class="title">DER · Alocação docente</text>
+  <text x="50" y="92" class="sub">Uma alocação reúne professor, curso, vários locais e várias unidades curriculares</text>
+
+  <path class="line" d="M330 280 H420"/><text class="mark" x="345" y="268">1</text><text class="mark" x="395" y="268">N</text>
+  <path class="line" d="M750 280 H860"/><text class="mark" x="765" y="268">1</text><text class="mark" x="833" y="268">N</text>
+  <path class="line" d="M370 645 H480"/><text class="mark" x="385" y="633">1</text><text class="mark" x="453" y="633">N</text>
+  <path class="line" d="M880 645 H960"/><text class="mark" x="894" y="633">1</text><text class="mark" x="932" y="633">N</text>
+  <path class="line" d="M1150 785 V830"/><text class="mark" x="1162" y="806">N</text><text class="mark" x="1162" y="830">1</text>
+  <path class="line" d="M315 390 V470 H545 V535"/><text class="mark" x="326" y="416">1</text><text class="mark" x="555" y="520">N</text>
+  <path class="line" d="M730 535 V450 H1070 V390"/><text class="mark" x="742" y="520">1</text><text class="mark" x="1082" y="416">N</text>
+
+  <g transform="translate(50 170)">
+    <rect class="box" width="280" height="220" rx="13"/><path class="head" d="M13 0H267a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">CATÁLOGO</text><text class="name" x="22" y="59">Curso</text>
+    <text class="pk" x="22" y="112">PK</text><text class="attr" x="62" y="112">id_curso</text>
+    <text class="attr" x="62" y="150">tipo · CT / CAI</text><text class="attr" x="62" y="186">título</text>
+  </g>
+  <g transform="translate(420 170)">
+    <rect class="box" width="330" height="220" rx="13"/><path class="head" d="M13 0H317a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">MATRIZ CURRICULAR</text><text class="name" x="22" y="59">Unidade curricular</text>
+    <text class="pk" x="22" y="110">PK</text><text class="attr" x="62" y="110">id_unidade</text>
+    <text class="fk" x="22" y="144">FK</text><text class="attr" x="62" y="144">id_curso</text>
+    <text class="attr" x="62" y="181">nome · semestre · carga</text>
+  </g>
+  <g transform="translate(860 170)">
+    <rect class="box" width="420" height="220" rx="13"/><path class="head" d="M13 0H407a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">ITENS DA ALOCAÇÃO</text><text class="name" x="22" y="59">Alocação_Unidade</text>
+    <text class="pk" x="22" y="112">PK / FK</text><text class="attr" x="99" y="112">id_alocação</text>
+    <text class="pk" x="22" y="151">PK / FK</text><text class="attr" x="99" y="151">id_unidade</text>
+    <text class="attr" x="22" y="189">Uma linha para cada unidade escolhida</text>
+  </g>
+  <g transform="translate(50 535)">
+    <rect class="box" width="320" height="250" rx="13"/><path class="head" d="M13 0H307a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">PESSOAS</text><text class="name" x="22" y="59">Professor</text>
+    <text class="pk" x="22" y="112">PK</text><text class="attr" x="62" y="112">id_professor</text>
+    <text class="attr" x="62" y="151">nome · atuação (CT / CAI)</text><text class="attr" x="62" y="190">habilitado (0 / 1)</text>
+  </g>
+  <g transform="translate(480 535)">
+    <rect class="box" width="400" height="250" rx="13"/><path class="head" d="M13 0H387a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">REGISTRO</text><text class="name" x="22" y="59">Alocação</text>
+    <text class="pk" x="22" y="110">PK</text><text class="attr" x="62" y="110">id_alocação</text>
+    <text class="fk" x="22" y="145">FK</text><text class="attr" x="62" y="145">id_professor · id_curso</text>
+    <text class="attr" x="22" y="187">data_salva · data_edição</text>
+    <text class="attr" x="22" y="219">confirmado_coordenacao</text>
+  </g>
+  <g transform="translate(960 535)">
+    <rect class="box" width="380" height="250" rx="13"/><path class="head" d="M13 0H367a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">LOCAIS DA ALOCAÇÃO</text><text class="name" x="22" y="59">Alocação_Ambiente</text>
+    <text class="pk" x="22" y="112">PK / FK</text><text class="attr" x="99" y="112">id_alocação</text>
+    <text class="pk" x="22" y="151">PK / FK</text><text class="attr" x="99" y="151">id_ambiente</text>
+    <text class="attr" x="22" y="189">Uma linha para cada local escolhido</text>
+  </g>
+  <g transform="translate(1040 830)">
+    <rect class="box" width="300" height="250" rx="13"/><path class="head" d="M13 0H287a13 13 0 0 1 13 13v67H0V13A13 13 0 0 1 13 0Z"/>
+    <text class="type" x="22" y="28">LOCAL</text><text class="name" x="22" y="59">Ambiente</text>
+    <text class="pk" x="22" y="112">PK</text><text class="attr" x="62" y="112">id_ambiente</text>
+    <text class="attr" x="62" y="151">identificação</text>
+  </g>
+  <text x="50" y="1110" class="note">Regra: Professor.atuação = Curso.tipo; 0 é recomendado e 1 exige decisão da coordenação.</text>
+</svg>
